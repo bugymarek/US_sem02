@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dynamicHashing;
+package nodes;
 
 /**
  *
@@ -16,6 +16,7 @@ public class ExternalNode extends Node{
     public ExternalNode(Node father, int depth) {
         super(father, depth);
         this.recordsCount = 0;
+        this.addressBlock = -1;
     }
 
     public int getRecordsCount() {

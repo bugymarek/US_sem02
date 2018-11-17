@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dynamicHashing;
+package data;
 
 /**
  *
  * @author Bugy
  */
-public class Core {
-    
+public interface ISerializable {
 }
