@@ -5,6 +5,7 @@
  */
 package data;
 
+import constants.CommonConstants;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -15,11 +16,12 @@ import java.io.IOException;
  *
  * @author Bugy
  */
-public class Realty  implements IRecord<Realty>{
+public class Realty implements IRecord<Realty> {
+
     private int id;
     private int idInCadaster;
     private String cadsterName;
-    private String desc; 
+    private String desc;
 
     public Realty(int id, int idInCadaster, String cadsterName, String desc) {
         this.id = id;
@@ -58,7 +60,7 @@ public class Realty  implements IRecord<Realty>{
 
     public void setDesc(String desc) {
         this.desc = desc;
-    }  
+    }
 
     @Override
     public boolean equalsData(Realty data) {
@@ -74,6 +76,20 @@ public class Realty  implements IRecord<Realty>{
             hlpOutStream.writeInt(this.id);
             hlpOutStream.writeInt(this.idInCadaster);
 
+            if (this.cadsterName.length() < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH) {
+                int invalidCharactersCount = CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH - this.cadsterName.length();
+                String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
+                this.cadsterName += invalidCharactersSubstring;
+            }
+            hlpOutStream.writeChars(this.cadsterName);
+
+            if (this.desc.length() < CommonConstants.REALTY_DESC_MAX_LENGTH) {
+                int invalidCharactersCount = CommonConstants.REALTY_DESC_MAX_LENGTH - this.desc.length();
+                String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
+                this.desc += invalidCharactersSubstring;
+            }
+            hlpOutStream.writeChars(this.desc);
+
             return hlpByteArrayOutputStream.toByteArray();
 
         } catch (IOException e) {
@@ -85,30 +101,40 @@ public class Realty  implements IRecord<Realty>{
     public IRecord fromByteArray(byte[] byteArray) {
         ByteArrayInputStream hlpByteArrayInputStream = new ByteArrayInputStream(byteArray);
         DataInputStream hlpInStream = new DataInputStream(hlpByteArrayInputStream);
-        Realty realty = new Realty(-1, -1, "ddddddd", "sssss");
-        
         try {
-            
-            int id = hlpInStream.readInt();
-            int idcadaster = hlpInStream.readInt();
-            realty.setId(id);
-            realty.setIdInCadaster(idcadaster);
+            this.id = hlpInStream.readInt();
+            this.idInCadaster = hlpInStream.readInt();
 
+            this.cadsterName = new String();
+            for (int i = 0; i < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH; i++) {
+                char charFromArr = hlpInStream.readChar();
+                if (charFromArr != '$') {
+                    this.cadsterName += Character.toString(charFromArr);
+                }
+            }
+
+            this.desc = new String();
+            for (int i = 0; i < CommonConstants.REALTY_DESC_MAX_LENGTH; i++) {
+                char charFromArr = hlpInStream.readChar();
+                if (charFromArr != '$') {
+                    this.desc += Character.toString(charFromArr);
+                }
+            }
+
+            return new Realty(id, idInCadaster, cadsterName, desc);
         } catch (IOException e) {
             throw new IllegalStateException("Error during conversion from byte array.");
         }
-        return realty;
     }
 
     @Override
     public int getSize() {
-        return constants.CommonConstants.SIZE_BY_BYTE_REALTY;
+        return constants.CommonConstants.SIZE_IN_BYTE_REALTY;
     }
 
     @Override
     public String toString() {
         return "Realty{" + "id=" + id + ", idInCadaster=" + idInCadaster + ", cadsterName=" + cadsterName + ", desc=" + desc + '}';
     }
-    
-    
+
 }

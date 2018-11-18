@@ -20,10 +20,11 @@ public class US_sem02 {
     public static void main(String[] args) {
         // TODO code application logic here
         //InternalNode internalNode = new InternalNode(null, 0);
-        Realty realty = new Realty(6, 9, "janko", "marek");
+        Realty realty = new Realty(1000000000, 1000000000, "janko", "marek");
         byte[] byteArr =  realty.toByteArray();
-        Realty realtyFromArr = (Realty) realty.fromByteArray(byteArr);
-        System.out.println(realtyFromArr.toString());
+        System.out.println("velkost pola: " + byteArr.length);
+        realty.fromByteArray(byteArr);
+        System.out.println(realty.toString());
     }
     
 }

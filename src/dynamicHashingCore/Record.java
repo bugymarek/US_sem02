@@ -32,6 +32,6 @@ public class Record{
     }
     
     public int getSize(){
-        return this.data.getSize() + constants.CommonConstants.SIZE_BY_BYTE_IS_VALID_RECORD;
+        return this.data.getSize() + constants.CommonConstants.SIZE_IN_BYTE_IS_VALID_RECORD;
     }
 }
