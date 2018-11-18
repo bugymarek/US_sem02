@@ -13,4 +13,10 @@ package data;
 public interface IRecord<T> {
     
     boolean equalsData(T data);
+    
+    byte[] toByteArray();
+    
+    IRecord fromByteArray(byte[] byteArray);
+    
+    int getSize();
 }

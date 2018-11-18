@@ -11,4 +11,11 @@ package dynamicHashingCore;
  */
 public class Block {
     
+    public byte[] toByteArray(){
+        return new byte[5];
+    }
+    
+    public Record fromByteArray(byte[] byteArray){
+        return null;
+    }
 }

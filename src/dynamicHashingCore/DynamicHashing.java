@@ -5,12 +5,9 @@
  */
 package dynamicHashingCore;
 
-import data.ISerializable;
-
 /**
  *
  * @author Bugy
  */
 public class DynamicHashing {
-    private ISerializable data;
 }
