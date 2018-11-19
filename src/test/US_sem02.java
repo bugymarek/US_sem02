@@ -6,7 +6,9 @@
 package test;
 
 import data.Realty;
+import dynamicHashingCore.Record;
 import nodes.InternalNode;
+import constants.CommonConstants;
 
 /**
  *
@@ -25,6 +27,12 @@ public class US_sem02 {
         System.out.println("velkost pola: " + byteArr.length);
         realty.fromByteArray(byteArr);
         System.out.println(realty.toString());
+        
+        Record record = new Record(false, realty);
+        byte[] byteRecord = record.toByteArray();
+        record.fromByteArray(byteRecord);
+        System.out.println(record.toString());
+   
     }
     
 }

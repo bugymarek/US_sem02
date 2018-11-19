@@ -6,6 +6,7 @@
 package data;
 
 import constants.CommonConstants;
+import dynamicHashingCore.Converter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -69,62 +70,52 @@ public class Realty implements IRecord<Realty> {
 
     @Override
     public byte[] toByteArray() {
-        ByteArrayOutputStream hlpByteArrayOutputStream = new ByteArrayOutputStream();
-        DataOutputStream hlpOutStream = new DataOutputStream(hlpByteArrayOutputStream);
+        Converter.ConverterToByteArray converterToByteArray = new Converter.ConverterToByteArray();
 
-        try {
-            hlpOutStream.writeInt(this.id);
-            hlpOutStream.writeInt(this.idInCadaster);
+        converterToByteArray.writeInt(this.id);
+        converterToByteArray.writeInt(this.idInCadaster);
 
-            if (this.cadsterName.length() < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH) {
-                int invalidCharactersCount = CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH - this.cadsterName.length();
-                String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
-                this.cadsterName += invalidCharactersSubstring;
-            }
-            hlpOutStream.writeChars(this.cadsterName);
-
-            if (this.desc.length() < CommonConstants.REALTY_DESC_MAX_LENGTH) {
-                int invalidCharactersCount = CommonConstants.REALTY_DESC_MAX_LENGTH - this.desc.length();
-                String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
-                this.desc += invalidCharactersSubstring;
-            }
-            hlpOutStream.writeChars(this.desc);
-
-            return hlpByteArrayOutputStream.toByteArray();
-
-        } catch (IOException e) {
-            throw new IllegalStateException("Error during conversion to byte array.");
+        if (this.cadsterName.length() < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH) {
+            int invalidCharactersCount = CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH - this.cadsterName.length();
+            String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
+            this.cadsterName += invalidCharactersSubstring;
         }
+        converterToByteArray.writeString(this.cadsterName);
+
+        if (this.desc.length() < CommonConstants.REALTY_DESC_MAX_LENGTH) {
+            int invalidCharactersCount = CommonConstants.REALTY_DESC_MAX_LENGTH - this.desc.length();
+            String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
+            this.desc += invalidCharactersSubstring;
+        }
+        converterToByteArray.writeString(this.desc);
+
+        return converterToByteArray.toByteArray();
     }
 
     @Override
     public IRecord fromByteArray(byte[] byteArray) {
-        ByteArrayInputStream hlpByteArrayInputStream = new ByteArrayInputStream(byteArray);
-        DataInputStream hlpInStream = new DataInputStream(hlpByteArrayInputStream);
-        try {
-            this.id = hlpInStream.readInt();
-            this.idInCadaster = hlpInStream.readInt();
+        Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
+        
+        this.id = converterFromByteArray.readInt();
+        this.idInCadaster = converterFromByteArray.readInt();
 
-            this.cadsterName = new String();
-            for (int i = 0; i < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH; i++) {
-                char charFromArr = hlpInStream.readChar();
-                if (charFromArr != '$') {
-                    this.cadsterName += Character.toString(charFromArr);
-                }
+        this.cadsterName = new String();
+        for (int i = 0; i < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH; i++) {
+            char charFromArr = converterFromByteArray.readChar();
+            if (charFromArr != '$') {
+                this.cadsterName += Character.toString(charFromArr);
             }
-
-            this.desc = new String();
-            for (int i = 0; i < CommonConstants.REALTY_DESC_MAX_LENGTH; i++) {
-                char charFromArr = hlpInStream.readChar();
-                if (charFromArr != '$') {
-                    this.desc += Character.toString(charFromArr);
-                }
-            }
-
-            return new Realty(id, idInCadaster, cadsterName, desc);
-        } catch (IOException e) {
-            throw new IllegalStateException("Error during conversion from byte array.");
         }
+
+        this.desc = new String();
+        for (int i = 0; i < CommonConstants.REALTY_DESC_MAX_LENGTH; i++) {
+            char charFromArr = converterFromByteArray.readChar();
+            if (charFromArr != '$') {
+                this.desc += Character.toString(charFromArr);
+            }
+        }
+
+        return this;
     }
 
     @Override

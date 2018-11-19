@@ -10,4 +10,5 @@ package dynamicHashingCore;
  * @author Bugy
  */
 public class DynamicHashing {
+    
 }

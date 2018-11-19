@@ -5,9 +5,111 @@
  */
 package dynamicHashingCore;
 
+import constants.CommonConstants;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  *
  * @author Bugy
  */
 public class Converter {
+
+    public static class ConverterToByteArray {
+
+        ByteArrayOutputStream hlpByteArrayOutputStream;
+        DataOutputStream hlpOutStream;
+
+        public ConverterToByteArray() {
+            hlpByteArrayOutputStream = new ByteArrayOutputStream();
+            hlpOutStream = new DataOutputStream(hlpByteArrayOutputStream);
+        }
+        
+        public byte[] toByteArray() {
+            return hlpByteArrayOutputStream.toByteArray();
+        }
+
+        public void writeInt(int value) {
+            try {
+                hlpOutStream.writeInt(value);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion to byte array.");
+            }
+        }
+
+        public void writeString(String value) {
+            try {
+                hlpOutStream.writeChars(value);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion to byte array.");
+            }
+        }
+
+        void writeBoolean(boolean value) {
+            try {
+                hlpOutStream.writeBoolean(value);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion to byte array.");
+            }
+        }
+
+        void writeByteArray(byte[] value) {
+            try {
+                hlpOutStream.write(value);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion to byte array.");
+            }
+        }
+    }
+
+    public static class ConverterFromByteArray {
+
+        ByteArrayInputStream hlpByteArrayInputStream;
+        DataInputStream hlpInStream;
+
+        public ConverterFromByteArray(byte[] byteArray) {
+            hlpByteArrayInputStream = new ByteArrayInputStream(byteArray);
+            hlpInStream = new DataInputStream(hlpByteArrayInputStream);
+        }
+
+        public int readInt() {
+            try {
+                return hlpInStream.readInt();
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion from byte array.");
+            }
+        }
+
+        public char readChar() {
+            try {
+                return hlpInStream.readChar();
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion from byte array.");
+            }
+        }
+        
+        public boolean readBoolean() {
+            try {
+                return hlpInStream.readBoolean();
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion from byte array.");
+            }
+        }
+
+        byte[] readByteArray(int size) {
+            try {
+                byte[] byteArray = new byte[size];
+                for (int i = 0; i < size; i++) {
+                    byteArray[i] = hlpInStream.readByte();
+                }
+                return byteArray;
+            } catch (IOException e) {
+                throw new IllegalStateException("Error during conversion from byte array.");
+            }
+        }
+        
+    }
 }
