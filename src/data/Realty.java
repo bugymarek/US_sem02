@@ -5,6 +5,7 @@
  */
 package data;
 
+import dynamicHashingCore.IRecord;
 import constants.CommonConstants;
 import dynamicHashingCore.Converter;
 import java.io.ByteArrayInputStream;
@@ -31,6 +32,16 @@ public class Realty implements IRecord<Realty> {
         this.desc = desc;
     }
 
+    /**
+     * Sets default values
+     */
+    public Realty() {
+        this.id = -1;
+        this.idInCadaster = -1;
+        this.cadsterName = "cdasterName";
+        this.desc = "description";
+    }
+    
     public int getId() {
         return id;
     }

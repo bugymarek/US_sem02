@@ -5,6 +5,8 @@
  */
 package data;
 
+import dynamicHashingCore.IRecord;
+
 /**
  *
  * @author Bugy

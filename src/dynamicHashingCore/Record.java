@@ -6,7 +6,6 @@
 package dynamicHashingCore;
 
 import constants.CommonConstants;
-import data.IRecord;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,13 +13,25 @@ import java.io.IOException;
  *
  * @author Bugy
  */
-public class Record{
+public class Record {
     private boolean isValid;
     private IRecord  data;
 
     public Record(boolean isValid, IRecord data) {
         this.isValid = isValid;
         this.data = data;
+    }
+
+    public IRecord getData() {
+        return data;
+    }
+
+    public boolean isIsValid() {
+        return isValid;
+    }
+
+    public void setIsValid(boolean isValid) {
+        this.isValid = isValid;
     }
 
     public boolean equals(IRecord parData) {

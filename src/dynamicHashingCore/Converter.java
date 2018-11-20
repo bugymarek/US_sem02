@@ -5,7 +5,6 @@
  */
 package dynamicHashingCore;
 
-import constants.CommonConstants;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

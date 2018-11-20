@@ -9,6 +9,7 @@ import data.Realty;
 import dynamicHashingCore.Record;
 import nodes.InternalNode;
 import constants.CommonConstants;
+import dynamicHashingCore.Block;
 
 /**
  *
@@ -32,7 +33,11 @@ public class US_sem02 {
         byte[] byteRecord = record.toByteArray();
         record.fromByteArray(byteRecord);
         System.out.println(record.toString());
-   
+        
+        Block block = new Block(0, 5, realty);
+        block.setValidRecord(2);
+        block.setValidRecord(4);
+        block.sortRecordsFirstValid();    
     }
     
 }
