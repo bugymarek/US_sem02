@@ -21,7 +21,11 @@ public class Record {
         this.isValid = isValid;
         this.data = data;
     }
-
+    
+    public Record copy(){
+        return new Record(isValid, data);
+    }
+    
     public IRecord getData() {
         return data;
     }
@@ -42,7 +46,7 @@ public class Record {
         Converter.ConverterToByteArray converterToByteArray = new Converter.ConverterToByteArray();
 
         converterToByteArray.writeBoolean(this.isValid);
-        converterToByteArray.writeByteArray(data.toByteArray());
+        converterToByteArray.writeByteArray(this.data.toByteArray());
 
         return converterToByteArray.toByteArray();
     }
@@ -50,10 +54,10 @@ public class Record {
     public Record fromByteArray(byte[] byteArray){
         Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
         
-        this.isValid = converterFromByteArray.readBoolean();
-        this.data = this.data.fromByteArray(converterFromByteArray.readByteArray(this.data.getSize()));
+        boolean isValid = converterFromByteArray.readBoolean();
+        IRecord data = this.data.fromByteArray(converterFromByteArray.readByteArray(this.data.getSize()));
 
-        return this;
+        return new Record(isValid, data);
     }
     
     public int getSize(){

@@ -107,26 +107,26 @@ public class Realty implements IRecord<Realty> {
     public IRecord fromByteArray(byte[] byteArray) {
         Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
         
-        this.id = converterFromByteArray.readInt();
-        this.idInCadaster = converterFromByteArray.readInt();
+        int id = converterFromByteArray.readInt();
+        int idInCadaster = converterFromByteArray.readInt();
 
-        this.cadsterName = new String();
+        String cadsterName = new String();
         for (int i = 0; i < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH; i++) {
             char charFromArr = converterFromByteArray.readChar();
             if (charFromArr != '$') {
-                this.cadsterName += Character.toString(charFromArr);
+                cadsterName += Character.toString(charFromArr);
             }
         }
 
-        this.desc = new String();
+        String desc = new String();
         for (int i = 0; i < CommonConstants.REALTY_DESC_MAX_LENGTH; i++) {
             char charFromArr = converterFromByteArray.readChar();
             if (charFromArr != '$') {
-                this.desc += Character.toString(charFromArr);
+                desc += Character.toString(charFromArr);
             }
         }
 
-        return this;
+        return new Realty(id, idInCadaster, cadsterName, desc);
     }
 
     @Override

@@ -6,6 +6,7 @@
 package dynamicHashingCore;
 
 import com.sun.java.swing.plaf.windows.WindowsTreeUI;
+import constants.CommonConstants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,12 +28,38 @@ public class Block {
         initRecords(record);
     }
 
-    public byte[] toByteArray() {
-        return new byte[5];
+    private Block(int address, int factor, List<Record> recordsList) {
+        this.address = address;
+        this.factor = factor;
+        this.recordsList = recordsList;
     }
 
-    public Record fromByteArray(byte[] byteArray) {
-        return null;
+    public byte[] toByteArray() {
+        Converter.ConverterToByteArray converterToByteArray = new Converter.ConverterToByteArray();
+
+        converterToByteArray.writeInt(this.address);
+        converterToByteArray.writeInt(this.factor);
+        for (Record record : recordsList) {
+            converterToByteArray.writeByteArray(record.toByteArray());
+        }
+
+        return converterToByteArray.toByteArray();
+    }
+
+    public Block fromByteArray(byte[] byteArray) {
+        Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
+        
+        int address = converterFromByteArray.readInt();
+        int factor = converterFromByteArray.readInt();
+
+        Record record =  recordsList.get(0).copy();
+        List<Record> recordsList = new ArrayList<>();
+        for (int i = 0; i < factor; i++) {
+            Record recordFrom = record.fromByteArray(converterFromByteArray.readByteArray(record.getSize()));
+            recordsList.add(recordFrom);
+        }
+
+        return new Block(address, factor, recordsList);
     }
 
     private void initRecords(IRecord record) {
@@ -71,11 +98,23 @@ public class Block {
     public int getInvalidRecordsCount() {
         int count = 0;
         for (Record record : recordsList) {
-            if (record.isIsValid()) {
+            if (!record.isIsValid()) {
                 count++;
             }
         }
         return count;
+    }
+    
+    public boolean addRecord(Record record){
+        if(getInvalidRecordsCount() == 0){
+            return false;
+        }
+        int index = getFirstInvalidIndexRecordSortedByIsValidFirst();
+        if(index == -1){
+            return false;
+        }
+        this.recordsList.set(index, record);
+        return true;
     }
 
     public int getAddress() {
@@ -89,4 +128,43 @@ public class Block {
     public void setValidRecord(int index) {
         this.recordsList.get(index).setIsValid(true);
     }
+    
+    public Record getFirstInvalidRecordSortedByIsValidFirst(){
+        Record result = null;
+        sortRecordsFirstValid();
+        for (Record record : recordsList) {
+            if(!record.isIsValid()){
+                return record;
+            }
+        }
+        return result;
+    }
+    
+    public int getFirstInvalidIndexRecordSortedByIsValidFirst(){
+        int result = -1;
+        sortRecordsFirstValid();
+        for (int i = 0; i < factor; i++) {
+            if(!recordsList.get(i).isIsValid()){
+                return i;
+            }
+        }
+        return result;
+    }
+    
+    public int getSize(){
+      return (this.recordsList.get(0).getSize() * this.factor) + CommonConstants.SIZE_IN_BYTE_ADDRESS_IN_BLOCK + CommonConstants.SIZE_IN_BYTE_FACTOR_IN_BLOCK;
+    }
+
+    @Override
+    public String toString() {
+        String  recordsListString= new String();
+        for (Record record : recordsList) {
+            recordsListString += record.toString() + "\n";
+        }
+        
+        return "Block{" + "address=" + address + ", recordsList=" + 
+                 recordsListString + ", factor=" + factor + '}';
+    }
+    
+    
 }

@@ -26,18 +26,25 @@ public class US_sem02 {
         Realty realty = new Realty(1000000000, 1000000000, "janko", "marek");
         byte[] byteArr =  realty.toByteArray();
         System.out.println("velkost pola: " + byteArr.length);
-        realty.fromByteArray(byteArr);
+        realty = (Realty) realty.fromByteArray(byteArr);
         System.out.println(realty.toString());
         
         Record record = new Record(false, realty);
         byte[] byteRecord = record.toByteArray();
-        record.fromByteArray(byteRecord);
+        record = record.fromByteArray(byteRecord);
         System.out.println(record.toString());
         
-        Block block = new Block(0, 5, realty);
-        block.setValidRecord(2);
-        block.setValidRecord(4);
-        block.sortRecordsFirstValid();    
+        
+        Block block = new Block(0, 5, new Realty(1000000000, 1000000000, "janko", "marek"));
+        block.addRecord(new Record(true, new Realty(1000000002, 1000000002, "janko2", "marek2")));
+        block.addRecord(new Record(true, new Realty(1000000003, 1000000003, "janko3", "marek3")));
+        block.addRecord(new Record(true, new Realty(1000000004, 1000000004, "janko4", "marek4")));
+        block.addRecord(new Record(true, new Realty(1000000005, 1000000005, "janko5", "marek5")));
+        byte[]byteBlock = block.toByteArray();
+        Block newBlock = block.fromByteArray(byteBlock);
+        System.out.println(newBlock);
+        //block.sortRecordsFirstValid();
+        
     }
     
 }
