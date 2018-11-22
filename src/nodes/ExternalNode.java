@@ -10,29 +10,36 @@ package nodes;
  * @author Bugy
  */
 public class ExternalNode extends Node{
-    private int recordsCount;
+    private int validRecordsCount;
     private int addressBlock;
     
     public ExternalNode(Node father, int depth) {
         super(father, depth);
-        this.recordsCount = 0;
+        this.validRecordsCount = 0;
         this.addressBlock = -1;
     }
 
-    public int getRecordsCount() {
-        return recordsCount;
+    public int getValidRecordsCount() {
+        return validRecordsCount;
     }
 
     public int getAddressBlock() {
         return addressBlock;
     }
 
-    public void setRecordsCount(int recordsCount) {
-        this.recordsCount = recordsCount;
+    public void setValidRecordsCount(int validRecordsCount) {
+        this.validRecordsCount = validRecordsCount;
     }
 
     public void setAddressBlock(int addressBlock) {
         this.addressBlock = addressBlock;
     }
     
+    public void incrementValidRecordsCount(){
+        validRecordsCount++;
+    }
+    
+    public void decrementValidRecordsCount(){
+        validRecordsCount--;
+    }
 }

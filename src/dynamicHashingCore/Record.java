@@ -39,8 +39,8 @@ public class Record<T> {
         this.isValid = isValid;
     }
 
-    public boolean equals(IRecord parData) {
-       return data.equalsData(data);
+    public boolean equals(Record<T> record) {
+       return data.equalsData(record.data);
     }
     
     public byte[] toByteArray(){

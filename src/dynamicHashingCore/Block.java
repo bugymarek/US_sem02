@@ -5,8 +5,6 @@
  */
 package dynamicHashingCore;
 
-import com.sun.java.swing.plaf.windows.WindowsTreeUI;
-import constants.CommonConstants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +19,8 @@ public class Block {
     private int address;
     private List<Record> recordsList;
     private int factor;
+    private static final int SIZE_IN_BYTE_ADDRESS_IN_BLOCK = 4;
+    private static final int SIZE_IN_BYTE_FACTOR_IN_BLOCK = 4;
 
     public Block(int address, int factor, IRecord record) {
         this.address = address;
@@ -116,6 +116,16 @@ public class Block {
         this.recordsList.set(index, record);
         return true;
     }
+    
+    // mozes urychlit ak najde r.isValid == false potom dalej neprehladava lebo pole je utrieene podla validnych zaznamov
+    public Record findRecord(Record record){
+        for (Record r : recordsList) {
+            if(r.isIsValid() && r.equals(record)){
+                return r;
+            }
+        }
+        return null;
+    }
 
     public int getAddress() {
         return address;
@@ -152,7 +162,7 @@ public class Block {
     }
     
     public int getSize(){
-      return (this.recordsList.get(0).getSize() * this.factor) + CommonConstants.SIZE_IN_BYTE_ADDRESS_IN_BLOCK + CommonConstants.SIZE_IN_BYTE_FACTOR_IN_BLOCK;
+      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK;
     }
 
     @Override
