@@ -6,6 +6,7 @@
 package data;
 
 import dynamicHashingCore.IRecord;
+import java.util.BitSet;
 
 /**
  *
@@ -41,4 +42,11 @@ public class RealtyInCadaster implements IRecord<RealtyInCadaster>{
     public int getSize() {
         return this.realty.getSize();
     }
+
+    @Override
+    public String getHashKey() {
+        return this.realty.getIdInCadaster() + this.realty.getCadsterName();
+    }
+
+    
 }

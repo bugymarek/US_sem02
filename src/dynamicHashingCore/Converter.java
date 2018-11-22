@@ -10,6 +10,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.BitSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +30,7 @@ public class Converter {
             hlpByteArrayOutputStream = new ByteArrayOutputStream();
             hlpOutStream = new DataOutputStream(hlpByteArrayOutputStream);
         }
-        
+
         public byte[] toByteArray() {
             return hlpByteArrayOutputStream.toByteArray();
         }
@@ -89,7 +93,7 @@ public class Converter {
                 throw new IllegalStateException("Error during conversion from byte array.");
             }
         }
-        
+
         public boolean readBoolean() {
             try {
                 return hlpInStream.readBoolean();
@@ -109,6 +113,33 @@ public class Converter {
                 throw new IllegalStateException("Error during conversion from byte array.");
             }
         }
+
+    }
+
+    public static BitSet getHashFromKey(String key, int size) {
+        BitSet bitSetResult = new BitSet();
+        char[] charsArr = key.toCharArray();
+        int number = 0;
+        for (char c : charsArr) {
+            number += c;
+        }
+
+        BitSet bitSetNumber = BitSet.valueOf(new long[]{number});
+
+        System.out.print("id -> ");
+        for (int i = bitSetNumber.length() - 1; i >= 0; i--) {
+            System.out.print(bitSetNumber.get(i) ? "1" : "0");
+        }
+
+        for (int i = 0; i < size; i++) {
+            bitSetResult.set(i, bitSetNumber.get(i));
+        }
+
+        System.out.print("\nid with define size-> ");
+        for (int i = size - 1; i >= 0; i--) {
+            System.out.print(bitSetResult.get(i) ? "1" : "0");
+        }
         
+        return bitSetResult;
     }
 }

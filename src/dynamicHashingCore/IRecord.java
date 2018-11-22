@@ -5,6 +5,8 @@
  */
 package dynamicHashingCore;
 
+import java.util.BitSet;
+
 
 /**
  *
@@ -19,4 +21,6 @@ public interface IRecord<T> {
     IRecord fromByteArray(byte[] byteArray);
     
     int getSize();
+    
+    String getHashKey();
 }

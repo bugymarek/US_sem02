@@ -9,13 +9,14 @@ import constants.CommonConstants;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.BitSet;
 /**
  *
  * @author Bugy
  */
-public class Record {
+public class Record<T> {
     private boolean isValid;
-    private IRecord  data;
+    private IRecord data;
 
     public Record(boolean isValid, IRecord data) {
         this.isValid = isValid;
@@ -69,5 +70,8 @@ public class Record {
         return "Record{" + "isValid=" + isValid + ", data=" + data.toString() + '}';
     }
     
+    public String getHashKey(){
+        return this.data.getHashKey();
+    }
     
 }

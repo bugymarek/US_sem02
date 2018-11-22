@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.BitSet;
 
 /**
  *
@@ -41,7 +42,7 @@ public class Realty implements IRecord<Realty> {
         this.cadsterName = "cdasterName";
         this.desc = "description";
     }
-    
+
     public int getId() {
         return id;
     }
@@ -106,7 +107,7 @@ public class Realty implements IRecord<Realty> {
     @Override
     public IRecord fromByteArray(byte[] byteArray) {
         Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
-        
+
         int id = converterFromByteArray.readInt();
         int idInCadaster = converterFromByteArray.readInt();
 
@@ -137,6 +138,11 @@ public class Realty implements IRecord<Realty> {
     @Override
     public String toString() {
         return "Realty{" + "id=" + id + ", idInCadaster=" + idInCadaster + ", cadsterName=" + cadsterName + ", desc=" + desc + '}';
+    }
+
+    @Override
+    public String getHashKey() {
+        return "" + this.id;
     }
 
 }
