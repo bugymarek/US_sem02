@@ -169,6 +169,10 @@ public class Block {
       return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK;
     }
 
+    public int getFactor() {
+        return factor;
+    }
+
     @Override
     public String toString() {
         String  recordsListString= new String();
@@ -176,8 +180,8 @@ public class Block {
             recordsListString += record.toString() + "\n";
         }
         
-        return "Block{" + "address=" + address + ", recordsList=" + 
-                 recordsListString + ", factor=" + factor + '}';
+        return "Block{" + "address=" + address + ", factor=" + factor + 
+                ", \nrecordsList=\n" + recordsListString + '}';
     }
     
     

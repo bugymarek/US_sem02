@@ -49,21 +49,25 @@ public class US_sem02 {
         
         int factor =3;
         //DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", 2, new Record(true, new RealtyInCadaster(new Realty(525, 1000000005, "janko5", "marek5"))), 5);
-        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", factor, new Record(true, new Realty()), 1);
+        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", factor, new Record(true, new Realty()), 6);
         dynamicHashing.createNewFiles("subor");
         
-        dynamicHashing.add(new Realty(525567, 1516541, "janko0", "marek0"));
-        dynamicHashing.add(new Realty(2, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(3, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(4, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(5, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(6, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(7, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(8, 1516541, "janko2", "marek2"));
-        dynamicHashing.add(new Realty(9, 1516541, "janko2", "marek2"));
-//        for (int i = 0; i < factor; i++) {
-//            dynamicHashing.add(new Realty(i, 1516541, "janko" + i, "marek" + i));
-//        }
+//        dynamicHashing.add(new Realty(525567, 1516541, "janko0", "marek0"));
+//        dynamicHashing.add(new Realty(2, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(3, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(4, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(5, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(6, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(7, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(8, 1516541, "janko2", "marek2"));
+//        dynamicHashing.add(new Realty(9, 1516541, "janko2", "marek2"));
+//        System.out.println(dynamicHashing.getFreeAddressesString());
+//        dynamicHashing.readAllBlocksFromFile("subor");
+        for (int i = 0; i < 1000; i++) {
+            dynamicHashing.add(new Realty(i, 1516541, "janko" + i, "marek" + i));
+        }
+        System.out.println(dynamicHashing.getFreeAddressesString());
+        dynamicHashing.readAllBlocksFromFile("subor");
         //dynamicHashing.add(new RealtyInCadaster(new Realty(525, 1000000005, "janko5", "marek5")));
         //dynamicHashing.createNewFiles("subor");
     }

@@ -97,9 +97,10 @@ public class DynamicHashing<T> {
             depth++;
         }
 
-        while (true) {// osteri ak ma externz prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
+        while (true) {// osteri ak ma externy prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
             if (((ExternalNode) currentNode).getAddressBlock() == -1) { //ak nieje alokovaný blok
-                Block block = new Block(getNextFreeAddress(), factor, templateRecord.getData());
+                int add = getNextFreeAddress();
+                Block block = new Block(add, factor, templateRecord.getData());
                 boolean resultMemory = block.addRecord(newRecord);
                 boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
                 if (resultMemory && resultFile) {
@@ -131,6 +132,7 @@ public class DynamicHashing<T> {
                 if (currentNode.getDepth() == maxHashSize) {
                     break; // kolizia. som v najväčšej hlbke. Preto nemôžem už vytvárať dalšie externe vrcholy a musím riešiť kolíziu
                 }
+                freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
                 Node newInternalNode = new InternalNode(currentNode.getFather(), currentNode.getDepth());
 
                 Node sonLeft = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
@@ -184,6 +186,7 @@ public class DynamicHashing<T> {
                     }
                     boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                     boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
+                    //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
                     if (resultFile1 && resultFile2) {
                         return true;
                     } else {
@@ -207,6 +210,8 @@ public class DynamicHashing<T> {
                     currentNode = sonLeft;
                     writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                 }
+                
+                //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
             }
         }
         // tu budem riešiť koliziu. Daj pozor aby sa vykonal tento kod len pri kolizii. To znamena že pri uspešnom/ neuspešnom vloženi treba mať return z metody.
@@ -230,6 +235,33 @@ public class DynamicHashing<T> {
         }
 
         return true;
+    }
+
+    public ArrayList<Block> readAllBlocksFromFile(String fileName) {
+        ArrayList<Block> blockArr = new ArrayList<>();
+        int address = 0;
+        while (true) {
+            Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_BLOCK.getSize(), mainFile));
+            if (block.getFactor() == 0) {
+                break;
+            }
+            System.out.println(block.toString());
+            blockArr.add(block);
+            address++;
+        }
+        return blockArr;
+    }
+
+    public String getFreeAddressesString() {
+        String result = "Addresy volných blokov: ";
+        for (int address : freeAddresses) {
+            result += address + ", ";
+        }
+        return result;
+    }
+
+    public ArrayList<Integer> getFreeAddresses() {
+        return freeAddresses;
     }
 
     private byte[] readFromFile(int offset, RandomAccessFile file) {
