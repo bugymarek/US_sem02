@@ -182,8 +182,8 @@ public class DynamicHashing<T> {
                         blockSonLeft.addRecord(newRecord);
                         ((ExternalNode) sonLeft).incrementValidRecordsCount();
                     }
-                    boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
-                    boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
+                    boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
+                    boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
                     if (resultFile1 && resultFile2) {
                         return true;
                     } else {
@@ -197,7 +197,7 @@ public class DynamicHashing<T> {
                     ((ExternalNode) sonLeft).setAddressBlock(-1);
                     blockSonLeft.setAddress(-1);
                     currentNode = sonRight;
-                    writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
+                    writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
                 }
 
                 if (blockSonRight.getInvalidRecordsCount() == factor) {
@@ -205,7 +205,7 @@ public class DynamicHashing<T> {
                     ((ExternalNode) sonRight).setAddressBlock(-1);
                     blockSonRight.setAddress(-1);
                     currentNode = sonLeft;
-                    writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
+                    writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                 }
             }
         }
