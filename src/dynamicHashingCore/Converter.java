@@ -135,11 +135,11 @@ public class Converter {
             bitSetResult.set(i, bitSetNumber.get(i));
         }
 
-        System.out.print("\nid with define size-> ");
+        System.out.print(" id with define size-> ");
         for (int i = size - 1; i >= 0; i--) {
             System.out.print(bitSetResult.get(i) ? "1" : "0");
         }
-        
+        System.out.println("\n");
         return bitSetResult;
     }
 }

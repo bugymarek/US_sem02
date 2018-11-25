@@ -135,6 +135,10 @@ public class Block {
         this.address = address;
     }
 
+    public List<Record> getRecordsList() {
+        return recordsList;
+    }
+    
     public void setValidRecord(int index) {
         this.recordsList.get(index).setIsValid(true);
     }

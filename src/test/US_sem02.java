@@ -7,7 +7,7 @@ package test;
 
 import entities.Realty;
 import dynamicHashingCore.Record;
-import nodes.InternalNode;
+import dynamicHashingCore.nodes.InternalNode;
 import constants.CommonConstants;
 import entities.RealtyInCadaster;
 import dynamicHashingCore.Block;
@@ -47,9 +47,9 @@ public class US_sem02 {
 //        System.out.println(newBlock);
         //block.sortRecordsFirstValid();
         
-        int factor =5;
+        int factor =3;
         //DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", 2, new Record(true, new RealtyInCadaster(new Realty(525, 1000000005, "janko5", "marek5"))), 5);
-        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", factor, new Record(true, new Realty()), 5);
+        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", factor, new Record(true, new Realty()), 1);
         dynamicHashing.createNewFiles("subor");
         
         dynamicHashing.add(new Realty(525567, 1516541, "janko0", "marek0"));
@@ -57,6 +57,10 @@ public class US_sem02 {
         dynamicHashing.add(new Realty(3, 1516541, "janko2", "marek2"));
         dynamicHashing.add(new Realty(4, 1516541, "janko2", "marek2"));
         dynamicHashing.add(new Realty(5, 1516541, "janko2", "marek2"));
+        dynamicHashing.add(new Realty(6, 1516541, "janko2", "marek2"));
+        dynamicHashing.add(new Realty(7, 1516541, "janko2", "marek2"));
+        dynamicHashing.add(new Realty(8, 1516541, "janko2", "marek2"));
+        dynamicHashing.add(new Realty(9, 1516541, "janko2", "marek2"));
 //        for (int i = 0; i < factor; i++) {
 //            dynamicHashing.add(new Realty(i, 1516541, "janko" + i, "marek" + i));
 //        }
