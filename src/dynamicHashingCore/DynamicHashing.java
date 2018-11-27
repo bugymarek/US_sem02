@@ -83,9 +83,26 @@ public class DynamicHashing<T> {
         }
     }
 
-    public boolean add(IRecord<T> record) {
-        Record newRecord = new Record(true, record);
+    public IRecord find(IRecord<T> record) {
+        IRecord result = null;
         BitSet hash = Converter.getHashFromKey(record.getHashKey(), maxHashSize);
+        ExternalNode externalNode = findExternalNode(hash);
+
+        if (externalNode.getAddressBlock() > -1 && externalNode.getValidRecordsCount() > 0) {
+            Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(externalNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+            Record findedRecord = block.findRecord(new Record(true, record));
+            if (findedRecord != null) {
+                result = findedRecord.getData();
+                System.out.println("Nasiel sa zaznam: " + findedRecord.getData().toString());
+            }else {
+                System.out.println("Nenasiel sa zaznam s hladanym ID: " + record.getHashKey());
+            }
+        }
+
+        return result;
+    }
+
+    private ExternalNode findExternalNode(BitSet hash) {
         Node currentNode = root;
         int depth = 0;
         while (currentNode instanceof InternalNode) {
@@ -96,23 +113,30 @@ public class DynamicHashing<T> {
             }
             depth++;
         }
+        return (ExternalNode) currentNode;
+    }
+
+    public boolean add(IRecord<T> record) {
+        Record newRecord = new Record(true, record);
+        BitSet hash = Converter.getHashFromKey(record.getHashKey(), maxHashSize);
+        ExternalNode currentNode = findExternalNode(hash);
 
         while (true) {// osteri ak ma externy prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
-            if (((ExternalNode) currentNode).getAddressBlock() == -1) { //ak nieje alokovaný blok
+            if (currentNode.getAddressBlock() == -1) { //ak nieje alokovaný blok
                 int add = getNextFreeAddress();
                 Block block = new Block(add, factor, templateRecord.getData());
                 boolean resultMemory = block.addRecord(newRecord);
                 boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
                 if (resultMemory && resultFile) {
-                    ((ExternalNode) currentNode).setAddressBlock(block.getAddress());
-                    ((ExternalNode) currentNode).incrementValidRecordsCount();
+                    currentNode.setAddressBlock(block.getAddress());
+                    currentNode.incrementValidRecordsCount();
                     return true;
                 } else {
                     System.out.println("\n nepodarilo sa vlozit záznam: " + record);
                     return false;
                 }
-            } else if (((ExternalNode) currentNode).getValidRecordsCount() < factor) { // ak je v bloku miesto miesto
-                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(((ExternalNode) currentNode).getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+            } else if (currentNode.getValidRecordsCount() < factor) { // ak je v bloku miesto miesto
+                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
                 if (block.findRecord(newRecord) != null) {
                     System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
                     return false;// uz sa tam nachadza záznam s vkladaným ID
@@ -120,7 +144,7 @@ public class DynamicHashing<T> {
                     boolean resultMemory = block.addRecord(newRecord);
                     boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
                     if (resultMemory && resultFile) {
-                        ((ExternalNode) currentNode).incrementValidRecordsCount();
+                        currentNode.incrementValidRecordsCount();
                         //System.out.println(block.toString());
                         return true;
                     } else {
@@ -132,16 +156,16 @@ public class DynamicHashing<T> {
                 if (currentNode.getDepth() == maxHashSize) {
                     break; // kolizia. som v najväčšej hlbke. Preto nemôžem už vytvárať dalšie externe vrcholy a musím riešiť kolíziu
                 }
-                freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
+                freeAddresses.add(currentNode.getAddressBlock());
                 Node newInternalNode = new InternalNode(currentNode.getFather(), currentNode.getDepth());
 
-                Node sonLeft = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
+                ExternalNode sonLeft = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
                 Block blockSonLeft = new Block(getNextFreeAddress(), factor, templateRecord.getData());
-                ((ExternalNode) sonLeft).setAddressBlock(blockSonLeft.getAddress());
+                sonLeft.setAddressBlock(blockSonLeft.getAddress());
 
-                Node sonRight = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
+                ExternalNode sonRight = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
                 Block blockSonRight = new Block(getNextFreeAddress(), factor, templateRecord.getData());
-                ((ExternalNode) sonRight).setAddressBlock(blockSonRight.getAddress());
+                sonRight.setAddressBlock(blockSonRight.getAddress());
 
                 ((InternalNode) newInternalNode).setLeftNode(sonLeft);
                 ((InternalNode) newInternalNode).setRightNode(sonRight);
@@ -152,7 +176,7 @@ public class DynamicHashing<T> {
                     ((InternalNode) currentNode.getFather()).setRightNode(newInternalNode);
                 } else if (((InternalNode) currentNode.getFather()).getRightNode() instanceof InternalNode) { // ak je pravy interny potom nastav laveho potomka
                     ((InternalNode) currentNode.getFather()).setLeftNode(newInternalNode);
-                } else if (((ExternalNode) ((InternalNode) currentNode.getFather()).getLeftNode()).getAddressBlock() == ((ExternalNode) currentNode).getAddressBlock()) { // zsiti koho si synom podla adresy, oba synovia su urcite externe vrcholy
+                } else if (((ExternalNode) ((InternalNode) currentNode.getFather()).getLeftNode()).getAddressBlock() == currentNode.getAddressBlock()) { // zsiti koho si synom podla adresy, oba synovia su urcite externe vrcholy
                     ((InternalNode) currentNode.getFather()).setLeftNode(newInternalNode);
                 } else {
                     ((InternalNode) currentNode.getFather()).setRightNode(newInternalNode);
@@ -161,17 +185,17 @@ public class DynamicHashing<T> {
                 // presuvam zaznamy. Tu potrebujes zistit hlbku aktualneho vrchola, co vlastne predstavuje frefix z hash retazca. To znamena ze vsetky zaznamy v tomto
                 // aktualnom vrchole maju rovnaku hodnotu prefixu. Preto potrebuješ pre každy zaznam v bolku zistit dalši bit z has retazca podla kotoreho ich potom 
                 // rozdeliš do synov. Bud do prava(1) alebo do lava(0)
-                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(((ExternalNode) currentNode).getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
                 int prefixSize = currentNode.getDepth() + 1;
                 for (Record r : block.getRecordsList()) {
                     if (r.isIsValid()) {
                         BitSet hashRecord = Converter.getHashFromKey(r.getHashKey(), maxHashSize);
                         if (hashRecord.get(prefixSize - 1)) {// idex dalsieho bitu
                             blockSonRight.addRecord(r);
-                            ((ExternalNode) sonRight).incrementValidRecordsCount();
+                            sonRight.incrementValidRecordsCount();
                         } else {
                             blockSonLeft.addRecord(r);
-                            ((ExternalNode) sonLeft).incrementValidRecordsCount();
+                            sonLeft.incrementValidRecordsCount();
                         }
                     }
                 }
@@ -179,10 +203,10 @@ public class DynamicHashing<T> {
                 if (blockSonLeft.getInvalidRecordsCount() > 0 && blockSonRight.getInvalidRecordsCount() > 0) {
                     if (hash.get(prefixSize - 1)) {// idex dalsieho bitu
                         blockSonRight.addRecord(newRecord);
-                        ((ExternalNode) sonRight).incrementValidRecordsCount();
+                        sonRight.incrementValidRecordsCount();
                     } else {
                         blockSonLeft.addRecord(newRecord);
-                        ((ExternalNode) sonLeft).incrementValidRecordsCount();
+                        sonLeft.incrementValidRecordsCount();
                     }
                     boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                     boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
@@ -197,7 +221,7 @@ public class DynamicHashing<T> {
 
                 if (blockSonLeft.getInvalidRecordsCount() == factor) {
                     freeAddresses.add(blockSonLeft.getAddress());
-                    ((ExternalNode) sonLeft).setAddressBlock(-1);
+                    sonLeft.setAddressBlock(-1);
                     blockSonLeft.setAddress(-1);
                     currentNode = sonRight;
                     writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
@@ -205,17 +229,17 @@ public class DynamicHashing<T> {
 
                 if (blockSonRight.getInvalidRecordsCount() == factor) {
                     freeAddresses.add(blockSonRight.getAddress());
-                    ((ExternalNode) sonRight).setAddressBlock(-1);
+                    sonRight.setAddressBlock(-1);
                     blockSonRight.setAddress(-1);
                     currentNode = sonLeft;
                     writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                 }
-                
+
                 //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
             }
         }
         // tu budem riešiť koliziu. Daj pozor aby sa vykonal tento kod len pri kolizii. To znamena že pri uspešnom/ neuspešnom vloženi treba mať return z metody.
-        System.out.println("\nKolizia");
+        System.out.println("\nKolizia. Id zaznamu: " + record.getHashKey());
         return true;
     }
 

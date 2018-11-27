@@ -42,6 +42,13 @@ public class Realty implements IRecord<Realty> {
         this.cadsterName = "cdasterName";
         this.desc = "description";
     }
+    
+    /**
+     * For find by id
+     */
+    public Realty(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
