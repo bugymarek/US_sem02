@@ -68,7 +68,7 @@ public class US_sem02 {
         }
         System.out.println(dynamicHashing.getFreeAddressesString());
         dynamicHashing.readAllBlocksFromFile("subor");
-        dynamicHashing.find(new Realty(800));
+        dynamicHashing.find(new Realty(79));
         //dynamicHashing.add(new RealtyInCadaster(new Realty(525, 1000000005, "janko5", "marek5")));
         //dynamicHashing.createNewFiles("subor");
     }

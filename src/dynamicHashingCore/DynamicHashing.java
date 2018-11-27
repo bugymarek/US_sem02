@@ -85,7 +85,6 @@ public class DynamicHashing<T> {
     }
 
     public IRecord find(IRecord<T> record) {
-        IRecord result = null;
         BitSet hash = Converter.getHashFromKey(record.getHashKey(), maxHashSize);
         ExternalNode externalNode = findExternalNode(hash);
 
@@ -93,14 +92,21 @@ public class DynamicHashing<T> {
             Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(externalNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
             Record findedRecord = block.findRecord(new Record(true, record));
             if (findedRecord != null) {
-                result = findedRecord.getData();
                 System.out.println("Nasiel sa zaznam: " + findedRecord.getData().toString());
-            } else {
+                return findedRecord.getData();
+            } else { // hladaj v preplnovacom subore              
+                while (block.getAddressNextBlock() > -1) {
+                    block = TEMPLATE_BLOCK.fromByteArray(readFromFile(block.getAddressNextBlock() * TEMPLATE_BLOCK.getSize(), additionFile));
+                    findedRecord = block.findRecord(new Record(true, record));
+                    if (findedRecord != null) {
+                        System.out.println("Nasiel sa zaznam: " + findedRecord.getData().toString());
+                        return findedRecord.getData();
+                    }
+                }
                 System.out.println("Nenasiel sa zaznam s hladanym ID: " + record.getHashKey());
             }
         }
-
-        return result;
+        return null;
     }
 
     private ExternalNode findExternalNode(BitSet hash) {
@@ -325,15 +331,16 @@ public class DynamicHashing<T> {
     private boolean addToAdditionFile(ExternalNode currentNode, IRecord<T> record) {
         Record newRecord = new Record(true, record);
         Block currentBlock = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+        boolean mainBlock = true;
         while (currentBlock.getAddressNextBlock() > -1) {
             if (currentBlock.findRecord(newRecord) != null) {
                 System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
                 return false;
             }
-            currentBlock = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), additionFile));
+            currentBlock = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentBlock.getAddressNextBlock() * TEMPLATE_BLOCK.getSize(), additionFile));
+            mainBlock = false;
         }
         // tu uz mam blok ktory je na konci zretazeneho zoznamu a urcite na celej ceste k nemu sa nenasiel vkladany záznam
-
         if (currentBlock.findRecord(newRecord) != null) {// kontola ci sa v nom nenachádza vkladaný záznam
             System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
             return false;
@@ -357,6 +364,11 @@ public class DynamicHashing<T> {
             if (resultMemory && resultFile) {
                 //currentNode.incrementValidRecordsCount(); potrebme len ak by som implementoval delte, Taktiez tereaz nebudem vediet kolko zaznamov sa pod tymot vrcholom nachádza
                 currentBlock.setAddressNextBlock(nextFreeAddressAdditionFile);
+                if (mainBlock) {
+                    writeToFile(currentBlock.getAddress() * TEMPLATE_BLOCK.getSize(), currentBlock.toByteArray(), mainFile);
+                } else {
+                    writeToFile(currentBlock.getAddress() * TEMPLATE_BLOCK.getSize(), currentBlock.toByteArray(), additionFile);
+                }
                 return true;
             } else {
                 nextFreeAddressAdditionFile--;
