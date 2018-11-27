@@ -151,5 +151,4 @@ public class Realty implements IRecord<Realty> {
     public String getHashKey() {
         return "" + this.id;
     }
-
 }

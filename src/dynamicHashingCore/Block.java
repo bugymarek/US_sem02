@@ -17,27 +17,32 @@ import java.util.List;
 public class Block {
 
     private int address;
+    private int addressNextBlock;
     private List<Record> recordsList;
     private int factor;
     private static final int SIZE_IN_BYTE_ADDRESS_IN_BLOCK = 4;
+    private static final int SIZE_IN_BYTE_ADDRESS_NEXT_BLOCK = 4;
     private static final int SIZE_IN_BYTE_FACTOR_IN_BLOCK = 4;
 
     public Block(int address, int factor, IRecord record) {
         this.address = address;
         this.factor = factor;
         initRecords(record);
+        this.addressNextBlock = -1;
     }
 
-    private Block(int address, int factor, List<Record> recordsList) {
+    private Block(int address, int factor, List<Record> recordsList, int addressNextBlock) {
         this.address = address;
         this.factor = factor;
         this.recordsList = recordsList;
+        this.addressNextBlock = addressNextBlock;
     }
 
     public byte[] toByteArray() {
         Converter.ConverterToByteArray converterToByteArray = new Converter.ConverterToByteArray();
 
         converterToByteArray.writeInt(this.address);
+        converterToByteArray.writeInt(this.addressNextBlock);
         converterToByteArray.writeInt(this.factor);
         for (Record record : recordsList) {
             converterToByteArray.writeByteArray(record.toByteArray());
@@ -50,6 +55,7 @@ public class Block {
         Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
         
         int address = converterFromByteArray.readInt();
+        int addressNextBlock = converterFromByteArray.readInt();
         int factor = converterFromByteArray.readInt();
 
         Record record =  recordsList.get(0).copy();
@@ -59,7 +65,7 @@ public class Block {
             recordsList.add(recordFrom);
         }
 
-        return new Block(address, factor, recordsList);
+        return new Block(address, factor, recordsList, addressNextBlock);
     }
 
     private void initRecords(IRecord record) {
@@ -166,11 +172,19 @@ public class Block {
     }
     
     public int getSize(){
-      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK;
+      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK + SIZE_IN_BYTE_ADDRESS_NEXT_BLOCK;
     }
 
     public int getFactor() {
         return factor;
+    }
+
+    public int getAddressNextBlock() {
+        return addressNextBlock;
+    }
+
+    public void setAddressNextBlock(int addressNextBlock) {
+        this.addressNextBlock = addressNextBlock;
     }
 
     @Override
