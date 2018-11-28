@@ -24,7 +24,6 @@ import java.util.Collections;
  */
 public class DynamicHashing<T> {
 
-    private int factor;
     private RandomAccessFile mainFile;
     private RandomAccessFile additionFile;
     private final String FILE_TYPE = ".hash";
@@ -34,10 +33,11 @@ public class DynamicHashing<T> {
     private Node root;
     private int maxHashSize;
     private final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
-    private final Block TEMPLATE_BLOCK;
+    private final Block TEMPLATE_MAIN_BLOCK;
+    private final Block TEMPLATE_ADDOTION_BLOCK;
     private final Record<T> TEMPLATE_RECORD;
 
-    public DynamicHashing(String fileNeme, int factor, Record<T> templateRecord, int maxHashSize) {
+    public DynamicHashing(String fileNeme, int mainFactor, int additionFactor, Record<T> templateRecord, int maxHashSize) {
         try {
             mainFile = new RandomAccessFile(PATH + fileNeme + FILE_TYPE, "rw");
         } catch (FileNotFoundException ex) {
@@ -51,11 +51,11 @@ public class DynamicHashing<T> {
         }
 
         this.TEMPLATE_RECORD = templateRecord;
-        this.factor = factor;
         this.nextFreeAddress = -1;
         this.freeAddresses = new ArrayList<>();
         this.maxHashSize = maxHashSize;
-        this.TEMPLATE_BLOCK = new Block(-1, factor, templateRecord.getData());
+        this.TEMPLATE_MAIN_BLOCK = new Block(-1, mainFactor, templateRecord.getData());
+        this.TEMPLATE_ADDOTION_BLOCK = new Block(-1, additionFactor, templateRecord.getData());
         this.nextFreeAddressAdditionFile = -1;
         root = new ExternalNode(null, 0);
     }
@@ -89,14 +89,14 @@ public class DynamicHashing<T> {
         ExternalNode externalNode = findExternalNode(hash);
 
         if (externalNode.getAddressBlock() > -1 && externalNode.getValidRecordsCount() > 0) {
-            Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(externalNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+            Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(externalNode.getAddressBlock() * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
             Record findedRecord = block.findRecord(new Record(true, record));
             if (findedRecord != null) {
                 System.out.println("Nasiel sa zaznam: " + findedRecord.getData().toString());
                 return findedRecord.getData();
             } else { // hladaj v preplnovacom subore              
                 while (block.getAddressNextBlock() > -1) {
-                    block = TEMPLATE_BLOCK.fromByteArray(readFromFile(block.getAddressNextBlock() * TEMPLATE_BLOCK.getSize(), additionFile));
+                    block = TEMPLATE_ADDOTION_BLOCK.fromByteArray(readFromFile(block.getAddressNextBlock() * TEMPLATE_ADDOTION_BLOCK.getSize(), additionFile, TEMPLATE_ADDOTION_BLOCK.getSize()));
                     findedRecord = block.findRecord(new Record(true, record));
                     if (findedRecord != null) {
                         System.out.println("Nasiel sa zaznam: " + findedRecord.getData().toString());
@@ -131,9 +131,9 @@ public class DynamicHashing<T> {
         while (true) {// osteri ak ma externy prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
             if (currentNode.getAddressBlock() == -1) { //ak nieje alokovaný blok
                 int add = getNextFreeAddress();
-                Block block = new Block(add, factor, TEMPLATE_RECORD.getData());
+                Block block = new Block(add, TEMPLATE_MAIN_BLOCK.getFactor(), TEMPLATE_RECORD.getData());
                 boolean resultMemory = block.addRecord(newRecord);
-                boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
+                boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), block.toByteArray(), mainFile);
                 if (resultMemory && resultFile) {
                     currentNode.setAddressBlock(block.getAddress());
                     currentNode.incrementValidRecordsCount();
@@ -142,14 +142,14 @@ public class DynamicHashing<T> {
                     System.out.println("\n nepodarilo sa vlozit záznam: " + record);
                     return false;
                 }
-            } else if (currentNode.getValidRecordsCount() < factor) { // ak je v prvom bloku miesto miesto
-                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+            } else if (currentNode.getValidRecordsCount() < TEMPLATE_MAIN_BLOCK.getFactor()) { // ak je v prvom bloku miesto miesto
+                Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
                 if (block.findRecord(newRecord) != null) {
                     System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
                     return false;// uz sa tam nachadza záznam s vkladaným ID
                 } else {
                     boolean resultMemory = block.addRecord(newRecord);
-                    boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray(), mainFile);
+                    boolean resultFile = writeToFile(block.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), block.toByteArray(), mainFile);
                     if (resultMemory && resultFile) {
                         currentNode.incrementValidRecordsCount();
                         //System.out.println(block.toString());
@@ -163,7 +163,7 @@ public class DynamicHashing<T> {
                 if (currentNode.getDepth() == maxHashSize) {
                     break; // kolizia. som v najväčšej hlbke. Preto nemôžem už vytvárať dalšie externe vrcholy a musím riešiť kolíziu
                 }
-                Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+                Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
                 if (block.findRecord(newRecord) != null) {
                     System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
                     return false;// uz sa tam nachadza záznam s vkladaným ID
@@ -172,11 +172,11 @@ public class DynamicHashing<T> {
                 Node newInternalNode = new InternalNode(currentNode.getFather(), currentNode.getDepth());
 
                 ExternalNode sonLeft = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
-                Block blockSonLeft = new Block(getNextFreeAddress(), factor, TEMPLATE_RECORD.getData());
+                Block blockSonLeft = new Block(getNextFreeAddress(), TEMPLATE_MAIN_BLOCK.getFactor(), TEMPLATE_RECORD.getData());
                 sonLeft.setAddressBlock(blockSonLeft.getAddress());
 
                 ExternalNode sonRight = new ExternalNode(newInternalNode, newInternalNode.getDepth() + 1);
-                Block blockSonRight = new Block(getNextFreeAddress(), factor, TEMPLATE_RECORD.getData());
+                Block blockSonRight = new Block(getNextFreeAddress(), TEMPLATE_MAIN_BLOCK.getFactor(), TEMPLATE_RECORD.getData());
                 sonRight.setAddressBlock(blockSonRight.getAddress());
 
                 ((InternalNode) newInternalNode).setLeftNode(sonLeft);
@@ -223,8 +223,8 @@ public class DynamicHashing<T> {
                 }
 
                 if (blockSonLeft.getValidRecordsCount() > 0 && blockSonRight.getValidRecordsCount() > 0) {
-                    boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
-                    boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
+                    boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
+                    boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
                     //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
                     if (resultFile1 && resultFile2) {
                         return true;
@@ -234,20 +234,20 @@ public class DynamicHashing<T> {
                     }
                 }
 
-                if (blockSonLeft.getInvalidRecordsCount() == factor) {
+                if (blockSonLeft.getInvalidRecordsCount() == TEMPLATE_MAIN_BLOCK.getFactor()) {
                     freeAddresses.add(blockSonLeft.getAddress());
                     sonLeft.setAddressBlock(-1);
                     blockSonLeft.setAddress(-1);
                     currentNode = sonRight;
-                    writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
+                    writeToFile(blockSonRight.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
                 }
 
-                if (blockSonRight.getInvalidRecordsCount() == factor) {
+                if (blockSonRight.getInvalidRecordsCount() == TEMPLATE_MAIN_BLOCK.getFactor()) {
                     freeAddresses.add(blockSonRight.getAddress());
                     sonRight.setAddressBlock(-1);
                     blockSonRight.setAddress(-1);
                     currentNode = sonLeft;
-                    writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
+                    writeToFile(blockSonLeft.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                 }
 
                 //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
@@ -281,7 +281,7 @@ public class DynamicHashing<T> {
         ArrayList<Block> blockArr = new ArrayList<>();
         int address = 0;
         while (true) {
-            Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_BLOCK.getSize(), mainFile));
+            Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
             if (block.getFactor() == 0) {
                 break;
             }
@@ -304,9 +304,9 @@ public class DynamicHashing<T> {
         return freeAddresses;
     }
 
-    private byte[] readFromFile(int offset, RandomAccessFile file) {
+    private byte[] readFromFile(int offset, RandomAccessFile file, int size) {
 
-        byte[] byteArr = new byte[TEMPLATE_BLOCK.getSize()];
+        byte[] byteArr = new byte[size];
         try {
             file.seek(offset);
         } catch (IOException ex) {
@@ -315,7 +315,7 @@ public class DynamicHashing<T> {
         }
 
         try {
-            file.read(byteArr, 0, TEMPLATE_BLOCK.getSize());
+            file.read(byteArr, 0, size);
         } catch (IOException ex) {
             Logger.getLogger(DynamicHashing.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -335,14 +335,14 @@ public class DynamicHashing<T> {
 
     private boolean addToAdditionFile(ExternalNode currentNode, IRecord<T> record) {
         Record newRecord = new Record(true, record);
-        Block currentBlock = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_BLOCK.getSize(), mainFile));
+        Block currentBlock = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(currentNode.getAddressBlock() * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
         boolean mainBlock = true;
         while (currentBlock.getAddressNextBlock() > -1) {
             if (currentBlock.findRecord(newRecord) != null) {
                 System.out.println("uz sa tam nachadza záznam s vkladaným ID: " + record.getHashKey());
                 return false;
             }
-            currentBlock = TEMPLATE_BLOCK.fromByteArray(readFromFile(currentBlock.getAddressNextBlock() * TEMPLATE_BLOCK.getSize(), additionFile));
+            currentBlock = TEMPLATE_ADDOTION_BLOCK.fromByteArray(readFromFile(currentBlock.getAddressNextBlock() * TEMPLATE_ADDOTION_BLOCK.getSize(), additionFile, TEMPLATE_ADDOTION_BLOCK.getSize()));
             mainBlock = false;
         }
         // tu uz mam blok ktory je na konci zretazeneho zoznamu a urcite na celej ceste k nemu sa nenasiel vkladany záznam
@@ -353,7 +353,7 @@ public class DynamicHashing<T> {
 
         if (currentBlock.getInvalidRecordsCount() > 0) {// v bloku je volne miesto
             boolean resultMemory = currentBlock.addRecord(newRecord);
-            boolean resultFile = writeToFile(currentBlock.getAddress() * TEMPLATE_BLOCK.getSize(), currentBlock.toByteArray(), additionFile);
+            boolean resultFile = writeToFile(currentBlock.getAddress() * TEMPLATE_ADDOTION_BLOCK.getSize(), currentBlock.toByteArray(), additionFile);
             if (resultMemory && resultFile) {
                 //currentNode.incrementValidRecordsCount(); potrebme len ak by som implementoval delte, Taktiez tereaz nebudem vediet kolko zaznamov sa pod tymot vrcholom nachádza
                 return true;
@@ -363,16 +363,16 @@ public class DynamicHashing<T> {
             }
         } else { // v bolku nieje volne miesto a preto vytvorim novy blok, zapisem tam zaznam a zretazim ho s aklutalnym blokom
             nextFreeAddressAdditionFile++;
-            Block newAdditionBlock = new Block(nextFreeAddressAdditionFile, factor, TEMPLATE_RECORD.getData());
+            Block newAdditionBlock = new Block(nextFreeAddressAdditionFile, TEMPLATE_ADDOTION_BLOCK.getFactor(), TEMPLATE_RECORD.getData());
             boolean resultMemory = newAdditionBlock.addRecord(newRecord);
-            boolean resultFile = writeToFile(newAdditionBlock.getAddress() * TEMPLATE_BLOCK.getSize(), newAdditionBlock.toByteArray(), additionFile);
+            boolean resultFile = writeToFile(newAdditionBlock.getAddress() * TEMPLATE_ADDOTION_BLOCK.getSize(), newAdditionBlock.toByteArray(), additionFile);
             if (resultMemory && resultFile) {
                 //currentNode.incrementValidRecordsCount(); potrebme len ak by som implementoval delte, Taktiez tereaz nebudem vediet kolko zaznamov sa pod tymot vrcholom nachádza
                 currentBlock.setAddressNextBlock(nextFreeAddressAdditionFile);
                 if (mainBlock) {
-                    writeToFile(currentBlock.getAddress() * TEMPLATE_BLOCK.getSize(), currentBlock.toByteArray(), mainFile);
+                    writeToFile(currentBlock.getAddress() * TEMPLATE_MAIN_BLOCK.getSize(), currentBlock.toByteArray(), mainFile);
                 } else {
-                    writeToFile(currentBlock.getAddress() * TEMPLATE_BLOCK.getSize(), currentBlock.toByteArray(), additionFile);
+                    writeToFile(currentBlock.getAddress() * TEMPLATE_ADDOTION_BLOCK.getSize(), currentBlock.toByteArray(), additionFile);
                 }
                 return true;
             } else {
