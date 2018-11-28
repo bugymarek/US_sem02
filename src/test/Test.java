@@ -27,7 +27,6 @@ public class Test {
                 arrID.add(realty.getId());
                 arr.add(realty);
                 boolean result = dynamicHashing.add(realty);
-                dynamicHashing.find(new test.Realty(5413533));
                 if (!result) {
                     duplicite++;
                     System.out.println("Prvok s rovnakym klucom sa uz v strome nachadza");

@@ -126,11 +126,6 @@ public class DynamicHashing<T> {
     public boolean add(IRecord<T> record) {
         Record newRecord = new Record(true, record);
         BitSet hash = Converter.getHashFromKey(record.getHashKey(), maxHashSize);
-        System.out.print(" id with define size-> ");
-        for (int i = 0; i < hash.length(); i++) {
-            System.out.print(hash.get(i) ? "1" : "0");
-        }
-        System.out.println("\n");
         ExternalNode currentNode = findExternalNode(hash);
 
         while (true) {// osteri ak ma externy prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
