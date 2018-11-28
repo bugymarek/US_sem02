@@ -126,6 +126,11 @@ public class DynamicHashing<T> {
     public boolean add(IRecord<T> record) {
         Record newRecord = new Record(true, record);
         BitSet hash = Converter.getHashFromKey(record.getHashKey(), maxHashSize);
+        System.out.print(" id with define size-> ");
+        for (int i = 0; i < hash.length(); i++) {
+            System.out.print(hash.get(i) ? "1" : "0");
+        }
+        System.out.println("\n");
         ExternalNode currentNode = findExternalNode(hash);
 
         while (true) {// osteri ak ma externy prvok max hlbku a v nom uz nieje miesto tak vznik kolizie... tato podmienka to zatial neosetruje
@@ -211,14 +216,18 @@ public class DynamicHashing<T> {
                     }
                 }
 
-                if (blockSonLeft.getInvalidRecordsCount() > 0 && blockSonRight.getInvalidRecordsCount() > 0) {
-                    if (hash.get(prefixSize - 1)) {// idex dalsieho bitu
-                        blockSonRight.addRecord(newRecord);
+                // vlozim vkladany prvok do jedneho zo synov... viem ze sa tam prvok nenachadza
+                if (hash.get(prefixSize - 1)) {// idex dalsieho bitu
+                    if(blockSonRight.addRecord(newRecord)){
                         sonRight.incrementValidRecordsCount();
-                    } else {
-                        blockSonLeft.addRecord(newRecord);
+                    }   
+                } else {                 
+                    if(blockSonLeft.addRecord(newRecord)){
                         sonLeft.incrementValidRecordsCount();
                     }
+                }
+
+                if (blockSonLeft.getValidRecordsCount() > 0 && blockSonRight.getValidRecordsCount() > 0) {
                     boolean resultFile1 = writeToFile(blockSonLeft.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonLeft.toByteArray(), mainFile);
                     boolean resultFile2 = writeToFile(blockSonRight.getAddress() * TEMPLATE_BLOCK.getSize(), blockSonRight.toByteArray(), mainFile);
                     //freeAddresses.add(((ExternalNode)currentNode).getAddressBlock());
@@ -250,7 +259,8 @@ public class DynamicHashing<T> {
             }
         }
         // tu budem riešiť koliziu. Daj pozor aby sa vykonal tento kod len pri kolizii. To znamena že pri uspešnom/ neuspešnom vloženi treba mať return z metody.
-        System.out.println("\nKolizia. Id zaznamu: " + record.getHashKey());
+        System.out.println("Kolizia. Id zaznamu: " + record.getHashKey());
+        System.out.println("\n");
         return addToAdditionFile(currentNode, record);
     }
 

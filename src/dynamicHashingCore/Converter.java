@@ -126,20 +126,20 @@ public class Converter {
 
         BitSet bitSetNumber = BitSet.valueOf(new long[]{number});
 
-        System.out.print("id -> ");
-        for (int i = bitSetNumber.length() - 1; i >= 0; i--) {
-            System.out.print(bitSetNumber.get(i) ? "1" : "0");
-        }
+//        System.out.print("id -> ");
+//        for (int i = bitSetNumber.length() - 1; i >= 0; i--) {
+//            System.out.print(bitSetNumber.get(i) ? "1" : "0");
+//        }
 
         for (int i = 0; i < size; i++) {
             bitSetResult.set(i, bitSetNumber.get(i));
         }
 
-        System.out.print(" id with define size-> ");
-        for (int i = size - 1; i >= 0; i--) {
-            System.out.print(bitSetResult.get(i) ? "1" : "0");
-        }
-        System.out.println("\n");
+//        System.out.print(" id with define size-> ");
+//        for (int i = size - 1; i >= 0; i--) {
+//            System.out.print(bitSetResult.get(i) ? "1" : "0");
+//        }
+//        System.out.println("\n");
         return bitSetResult;
     }
 }

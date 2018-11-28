@@ -3,11 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entities;
+package test;
 
+import entities.*;
 import dynamicHashingCore.IRecord;
 import constants.CommonConstants;
 import dynamicHashingCore.Converter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.BitSet;
+
 /**
  *
  * @author Bugy
