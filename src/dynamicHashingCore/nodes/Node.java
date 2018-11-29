@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 package dynamicHashingCore.nodes;
+
+import dynamicHashingCore.ISavable;
+
 /**
  *
  * @author Bugy
@@ -32,4 +35,5 @@ public class Node {
     public void setDepth(int depth) {
         this.depth = depth;
     }
+
 }

@@ -17,6 +17,8 @@ import dynamicHashingCore.nodes.InternalNode;
 import dynamicHashingCore.nodes.Node;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  *
@@ -36,6 +38,7 @@ public class DynamicHashing<T> {
     private final Block TEMPLATE_MAIN_BLOCK;
     private final Block TEMPLATE_ADDOTION_BLOCK;
     private final Record<T> TEMPLATE_RECORD;
+    private final String FILE_NAME;
 
     public DynamicHashing(String fileNeme, int mainFactor, int additionFactor, Record<T> templateRecord, int maxHashSize) {
         try {
@@ -56,6 +59,7 @@ public class DynamicHashing<T> {
         this.maxHashSize = maxHashSize;
         this.TEMPLATE_MAIN_BLOCK = new Block(-1, mainFactor, templateRecord.getData());
         this.TEMPLATE_ADDOTION_BLOCK = new Block(-1, additionFactor, templateRecord.getData());
+        this.FILE_NAME = fileNeme;
         this.nextFreeAddressAdditionFile = -1;
         root = new ExternalNode(null, 0);
     }
@@ -213,13 +217,11 @@ public class DynamicHashing<T> {
 
                 // vlozim vkladany prvok do jedneho zo synov... viem ze sa tam prvok nenachadza
                 if (hash.get(prefixSize - 1)) {// idex dalsieho bitu
-                    if(blockSonRight.addRecord(newRecord)){
+                    if (blockSonRight.addRecord(newRecord)) {
                         sonRight.incrementValidRecordsCount();
-                    }   
-                } else {                 
-                    if(blockSonLeft.addRecord(newRecord)){
-                        sonLeft.incrementValidRecordsCount();
                     }
+                } else if (blockSonLeft.addRecord(newRecord)) {
+                    sonLeft.incrementValidRecordsCount();
                 }
 
                 if (blockSonLeft.getValidRecordsCount() > 0 && blockSonRight.getValidRecordsCount() > 0) {
@@ -383,4 +385,38 @@ public class DynamicHashing<T> {
         }
     }
 
+    public ArrayList<Node> levelOrder() {
+        ArrayList<Node> listArr = new ArrayList<>();
+        Queue<Node> level = new LinkedList<Node>();
+        level.add(root);
+
+        while (!level.isEmpty() && root != null) {
+            int nodeCountInCurrentLevel = level.size(); //počet prvkov na danej urovni
+
+            while (nodeCountInCurrentLevel > 0) {  // vloženie prvkov do pola z aktualnej urovne, pridanie prvkov do fornty z nasledujúceho levelu
+                Node node = level.poll();
+                if (node != null) {
+                    listArr.add(node);
+                    if (node instanceof InternalNode) {
+                        if (((InternalNode) node).getLeftNode()!= null) {
+                            level.add(((InternalNode) node).getLeftNode());
+                        }
+                        if (((InternalNode) node).getRightNode()!= null) {
+                            level.add(((InternalNode) node).getRightNode());
+                        }
+                    }
+                    nodeCountInCurrentLevel--;
+                }
+            }
+        }
+        return listArr;
+    }
+    
+    public boolean saveTrieToFile(){
+       return Storage.saveArray(this.levelOrder(), PATH, FILE_NAME + "config");
+    }
+
+    public void setRoot(Node root) {
+        this.root = root;
+    }
 }

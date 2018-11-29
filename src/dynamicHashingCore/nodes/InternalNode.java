@@ -5,11 +5,14 @@
  */
 package dynamicHashingCore.nodes;
 
+import dynamicHashingCore.ISavable;
+import sun.java2d.pipe.AATileGenerator;
+
 /**
  *
  * @author Bugy
  */
-public class InternalNode extends Node{
+public class InternalNode extends Node implements ISavable{
     private Node leftNode;
     private Node rightNode;
     
@@ -32,4 +35,9 @@ public class InternalNode extends Node{
     public void setRightNode(Node rightNode) {
         this.rightNode = rightNode;
     }    
+
+    @Override
+    public String save() {
+        return "I;";
+    }
 }

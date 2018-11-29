@@ -5,11 +5,13 @@
  */
 package dynamicHashingCore.nodes;
 
+import dynamicHashingCore.ISavable;
+
 /**
  *
  * @author Bugy
  */
-public class ExternalNode extends Node{
+public class ExternalNode extends Node implements ISavable{
     private int validRecordsCount;
     private int addressBlock;
     
@@ -41,5 +43,10 @@ public class ExternalNode extends Node{
     
     public void decrementValidRecordsCount(){
         validRecordsCount--;
+    }
+
+    @Override
+    public String save() {
+        return "E|" + this.validRecordsCount + "|" + this.addressBlock + ";";
     }
 }

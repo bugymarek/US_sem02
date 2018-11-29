@@ -28,5 +28,6 @@ public class US_sem02 {
         
         Test test = new Test(dynamicHashing);
         test.checkInsert();
+        dynamicHashing.saveTrieToFile();
     }
 }
