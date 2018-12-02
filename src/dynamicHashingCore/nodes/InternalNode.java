@@ -5,8 +5,6 @@
  */
 package dynamicHashingCore.nodes;
 
-import dynamicHashingCore.ISavable;
-import sun.java2d.pipe.AATileGenerator;
 
 /**
  *
@@ -17,7 +15,8 @@ public class InternalNode extends Node {
     private Node rightNode;
     
     public InternalNode(Node father, int depth) {
-        super(father, depth);
+        this.father = father;
+        this.depth = depth;
     }
 
     public Node getLeftNode() {

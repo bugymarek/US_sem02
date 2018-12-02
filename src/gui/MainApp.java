@@ -6,6 +6,7 @@
 package gui;
 
 import java.awt.Font;
+import javax.swing.JOptionPane;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -21,6 +22,18 @@ public class MainApp extends javax.swing.JDialog {
     public MainApp(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        int result = JOptionPane.showConfirmDialog(this,
+                "Chcete načítať exitstujúcu databázú dát",
+                "Uložisko dát",
+                JOptionPane.YES_NO_OPTION);
+        if(result == JOptionPane.YES_OPTION){
+            System.out.println("ano");
+        }
+        
+        if(result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION ){
+            System.out.println("nie");
+        }
+
     }
 
     /**
@@ -288,7 +301,7 @@ public class MainApp extends javax.swing.JDialog {
             }
         });
     }
-    
+
     private void configTextPane() {
         jTextPaneConsole.setContentType("text/html");
         Font f = new Font(Font.SANS_SERIF, 3, 13);

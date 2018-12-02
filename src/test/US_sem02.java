@@ -23,7 +23,7 @@ public class US_sem02 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", 5,10, new Record(true, new Realty()), 15);
+        DynamicHashing<Realty> dynamicHashing = new DynamicHashing("subor", 5,10, new Realty(), 15);
         dynamicHashing.createNewFiles("subor");
         
         Test test = new Test(dynamicHashing);

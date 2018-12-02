@@ -55,7 +55,8 @@ public class Test {
             return false;
         }
         System.out.println("**************************************************************************************************************************** load from file");
-        if(!dynamicHashing.loadTrie()){
+        dynamicHashing = DynamicHashing.loadTrie(dynamicHashing.getFILE_NAME(), dynamicHashing.getTEMPLATE_RECORD().getData());
+        if(dynamicHashing == null){
             return false;
         }
         

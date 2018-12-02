@@ -5,7 +5,6 @@
  */
 package dynamicHashingCore.nodes;
 
-import dynamicHashingCore.ISavable;
 
 /**
  *
@@ -16,7 +15,8 @@ public class ExternalNode extends Node{
     private int addressBlock;
     
     public ExternalNode(Node father, int depth) {
-        super(father, depth);
+        this.father = father;
+        this.depth = depth;
         this.validRecordsCount = 0;
         this.addressBlock = -1;
     }

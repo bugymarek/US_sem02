@@ -37,15 +37,15 @@ public class DynamicHashing<T> {
     private ArrayList<Integer> freeAddresses;
     private Node root;
     private int maxHashSize;
-    private final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
+    public static final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
     private final Block TEMPLATE_MAIN_BLOCK;
     private final Block TEMPLATE_ADDOTION_BLOCK;
     private final Record<T> TEMPLATE_RECORD;
-    private final String FILE_NAME;
-    private final String FILE_TYPE = ".hash";
-    private final String FILE_CONFIG_TYPE = ".txt";
+    private String FILE_NAME;
+    private static final String FILE_TYPE = ".hash";
+    public static final String FILE_CONFIG_TYPE = ".txt";
 
-    public DynamicHashing(String fileNeme, int mainFactor, int additionFactor, Record<T> templateRecord, int maxHashSize) {
+    public DynamicHashing(String fileNeme, int mainFactor, int additionFactor, IRecord<T> templateRecord, int maxHashSize) {
         try {
             mainFile = new RandomAccessFile(PATH + fileNeme + FILE_TYPE, "rw");
         } catch (FileNotFoundException ex) {
@@ -58,12 +58,12 @@ public class DynamicHashing<T> {
             Logger.getLogger(DynamicHashing.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.TEMPLATE_RECORD = templateRecord;
+        this.TEMPLATE_RECORD = new Record<T>(false, templateRecord);
         this.nextFreeAddress = -1;
         this.freeAddresses = new ArrayList<>();
         this.maxHashSize = maxHashSize;
-        this.TEMPLATE_MAIN_BLOCK = new Block(-1, mainFactor, templateRecord.getData());
-        this.TEMPLATE_ADDOTION_BLOCK = new Block(-1, additionFactor, templateRecord.getData());
+        this.TEMPLATE_MAIN_BLOCK = new Block(-1, mainFactor, TEMPLATE_RECORD.getData());
+        this.TEMPLATE_ADDOTION_BLOCK = new Block(-1, additionFactor, TEMPLATE_RECORD.getData());
         this.FILE_NAME = fileNeme;
         this.nextFreeAddressAdditionFile = -1;
         root = new ExternalNode(null, 0);
@@ -403,10 +403,10 @@ public class DynamicHashing<T> {
                 if (node != null) {
                     listArr.add(node);
                     if (node instanceof InternalNode) {
-                        if (((InternalNode) node).getLeftNode()!= null) {
+                        if (((InternalNode) node).getLeftNode() != null) {
                             level.add(((InternalNode) node).getLeftNode());
                         }
-                        if (((InternalNode) node).getRightNode()!= null) {
+                        if (((InternalNode) node).getRightNode() != null) {
                             level.add(((InternalNode) node).getRightNode());
                         }
                     }
@@ -416,7 +416,7 @@ public class DynamicHashing<T> {
         }
         return listArr;
     }
-    
+
     public boolean saveTrieToFile() {
         PrintWriter writer = null;
         try {
@@ -430,7 +430,20 @@ public class DynamicHashing<T> {
             System.out.println("Chyba suboru. Subor sa nenasiel alebo je otvoreny. Alebo nastala ina chyba suboru: \n" + sb.toString());
             return false;
         }
-        
+
+        // save zakladne informacie o strukture
+        writer.append(this.FILE_NAME + ";");
+        writer.append(this.TEMPLATE_MAIN_BLOCK.getFactor() + ";");
+        writer.append(this.TEMPLATE_ADDOTION_BLOCK.getFactor() + ";");
+        writer.append(this.maxHashSize + ";");
+        writer.append(this.nextFreeAddressAdditionFile + ";");
+        writer.append(this.nextFreeAddress + ";");
+        writer.append(System.lineSeparator());
+        for (Integer freeAddresse : freeAddresses) {
+            writer.append(freeAddresse + ";");
+        }
+        writer.append(System.lineSeparator());
+
         ArrayList<Node> listArr = new ArrayList<>();
         Queue<Node> level = new LinkedList<Node>();
         level.add(root);
@@ -444,28 +457,28 @@ public class DynamicHashing<T> {
                     writer.append(node.save());
                     listArr.add(node);
                     if (node instanceof InternalNode) {
-                        if (((InternalNode) node).getLeftNode()!= null) {
+                        if (((InternalNode) node).getLeftNode() != null) {
                             level.add(((InternalNode) node).getLeftNode());
                         }
-                        if (((InternalNode) node).getRightNode()!= null) {
+                        if (((InternalNode) node).getRightNode() != null) {
                             level.add(((InternalNode) node).getRightNode());
                         }
                     }
                     nodeCountInCurrentLevel--;
                 }
             }
-            
+
             writer.append(System.lineSeparator());
         }
         writer.close();
         return true;
     }
-    
-    public boolean loadTrie() {
-        boolean result = true;
+
+    public static <T> DynamicHashing<T> loadTrie(String fileName, IRecord<T> templateRecord) {
+        DynamicHashing<T> result = null;
         Scanner sc = null;
         try {
-            sc = new Scanner(new FileReader(this.PATH + this.FILE_NAME + "Config" + this.FILE_CONFIG_TYPE));
+            sc = new Scanner(new FileReader(PATH + fileName + "Config" + FILE_CONFIG_TYPE));
         } catch (FileNotFoundException e) {
             StringBuilder sb = new StringBuilder();
             for (StackTraceElement element : e.getStackTrace()) {
@@ -473,8 +486,27 @@ public class DynamicHashing<T> {
                 sb.append("\n");
             }
             System.out.println("Chyba suboru. Subor sa nenasiel alebo je otvoreny. Alebo nastala ina chyba suboru: \n" + sb.toString());
-            return false;
+            return result;
         }
+
+        //load zakladne informacie o strukture
+        if (sc.hasNextLine()) {
+            String[] line = sc.nextLine().split(";");
+            result = new DynamicHashing(line[0], Integer.parseInt(line[1]), Integer.parseInt(line[2]), templateRecord, Integer.parseInt(line[3]));
+            result.setNextFreeAddressAdditionFile(Integer.parseInt(line[4]));
+            result.setNextFreeAddressAdditionFile(Integer.parseInt(line[5]));
+
+            String row = sc.nextLine();
+            line = row.split(";");
+            if (!row.isEmpty() && !row.equals("")) {
+                ArrayList<Integer> freeAddresses = new ArrayList<>();
+                for (String address : line) {
+                    freeAddresses.add(Integer.parseInt(address));
+                }
+            }
+
+        }
+
         int depth = 0;
         Node root = null;
         LinkedList<Node> nodesLevel = new LinkedList<>();
@@ -497,7 +529,7 @@ public class DynamicHashing<T> {
             depth++;
             String[] line = sc.nextLine().split(";");
             LinkedList<Node> nextLevelNodes = new LinkedList<>();
-            
+
             for (int i = 0; i < line.length; i++) {
                 String nodeString = line[i];
                 String[] params = nodeString.split("_");
@@ -510,35 +542,62 @@ public class DynamicHashing<T> {
                     nextLevelNodes.add(new InternalNode(null, depth));
                 }
             }
-            
-            Iterator <Node> NodesIterator = nextLevelNodes.iterator();
+
+            Iterator<Node> NodesIterator = nextLevelNodes.iterator();
             while (!nodesLevel.isEmpty()) {
                 Node node = nodesLevel.poll();
-                  
+
                 Node nodeLeft = NodesIterator.next();
                 Node nodeRight = NodesIterator.next();
-                
+
                 ((InternalNode) node).setLeftNode(nodeLeft);
                 ((InternalNode) node).setRightNode(nodeRight);
-                
+
                 nodeLeft.setFather(node);
                 nodeRight.setFather(node);
             }
-            
-            while(!nextLevelNodes.isEmpty()) {
+
+            while (!nextLevelNodes.isEmpty()) {
                 Node nodeNext = nextLevelNodes.poll();
-                if(nodeNext instanceof InternalNode){
+                if (nodeNext instanceof InternalNode) {
                     nodesLevel.add(nodeNext);
                 }
             }
         }
         sc.close();
-
-        this.setRoot(root);
+        result.setRoot(root);
         return result;
     }
 
     public void setRoot(Node root) {
         this.root = root;
+    }
+
+    public String getFILE_NAME() {
+        return FILE_NAME;
+    }
+
+    public void setNextFreeAddress(int nextFreeAddress) {
+        this.nextFreeAddress = nextFreeAddress;
+    }
+
+    public void setNextFreeAddressAdditionFile(int nextFreeAddressAdditionFile) {
+        this.nextFreeAddressAdditionFile = nextFreeAddressAdditionFile;
+    }
+
+    public void setFreeAddresses(ArrayList<Integer> freeAddresses) {
+        this.freeAddresses = freeAddresses;
+    }
+
+    public void setMaxHashSize(int maxHashSize) {
+        this.maxHashSize = maxHashSize;
+    }
+
+    public void setFILE_NAME(String FILE_NAME) {
+        this.FILE_NAME = FILE_NAME;
+    }
+
+    public Record<T> getTEMPLATE_RECORD() {
+        return TEMPLATE_RECORD;
     }
 }

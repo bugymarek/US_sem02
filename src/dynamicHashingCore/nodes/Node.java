@@ -5,27 +5,22 @@
  */
 package dynamicHashingCore.nodes;
 
-import dynamicHashingCore.ISavable;
-
 /**
  *
  * @author Bugy
  */
-public class Node implements ISavable{
-    private Node father;
-    private int depth;
+public abstract class Node {
+    protected Node father;
+    protected int depth;
 
-    public Node(Node father, int depth) {
-        this.father = father;
-        this.depth = depth;
-    }
-    
+    public abstract String save(); 
+
     public Node getFather() {
-        return this.father;
+        return father;
     }
-    
+
     public int getDepth() {
-        return this.depth;
+        return depth;
     }
 
     public void setFather(Node father) {
@@ -35,10 +30,4 @@ public class Node implements ISavable{
     public void setDepth(int depth) {
         this.depth = depth;
     }
-
-    @Override
-    public String save() {
-       return "no define";
-    }
-    
 }
