@@ -14,7 +14,7 @@ public class Test {
         this.dynamicHashing = dynamicHashing;
     }
 
-    public boolean checkInsert() {
+    public boolean checkInsertSaveAndLoad() {
         Random randomGenerator = new Random(2);
         ArrayList<Realty> arr = new ArrayList<>();
         ArrayList<Integer> arrID = new ArrayList<>();
@@ -40,16 +40,38 @@ public class Test {
         for (int k = 0; k < arr.size(); k++) {
             Realty realtyArr = arr.get(k);
             IRecord realtyDH = dynamicHashing.find(realtyArr);
-            System.out.println("*************************************************************************** find");
             if (realtyDH != null) {
-                //System.out.println("true: DataArr: (" + personArr.getRC() + ")   " + "DataTree: (" + personTree.toString() + ")");
-                //System.out.println("Seed: " + i);
+                System.out.println("*************************************************************************** find");
+                System.out.println("Nasiel sa zaznam: " + realtyDH.toString());
             } else {
                 System.out.println("*************************************************************************** find");
                 System.out.println("false, prvok sa v strome nenasiel: " + realtyArr.toString());
                 return false;
             }
         }
+        
+        System.out.println("***************************************************************************************************************************** save to file");
+        if(!dynamicHashing.saveTrieToFile()){
+            return false;
+        }
+        System.out.println("**************************************************************************************************************************** load from file");
+        if(!dynamicHashing.loadTrie()){
+            return false;
+        }
+        
+        for (int k = 0; k < arr.size(); k++) {
+            Realty realtyArr = arr.get(k);
+            IRecord realtyDH = dynamicHashing.find(realtyArr);           
+            if (realtyDH != null) {
+                System.out.println("*************************************************************************** find");
+                System.out.println("Nasiel sa zaznam: " + realtyDH.toString());
+            } else {
+                System.out.println("*************************************************************************** find");
+                System.out.println("false, prvok sa v strome nenasiel: " + realtyArr.toString());
+                return false;
+            }
+        }
+        
         return true;
     }
 }

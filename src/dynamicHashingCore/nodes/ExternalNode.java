@@ -11,7 +11,7 @@ import dynamicHashingCore.ISavable;
  *
  * @author Bugy
  */
-public class ExternalNode extends Node implements ISavable{
+public class ExternalNode extends Node{
     private int validRecordsCount;
     private int addressBlock;
     
@@ -47,6 +47,6 @@ public class ExternalNode extends Node implements ISavable{
 
     @Override
     public String save() {
-        return "E|" + this.validRecordsCount + "|" + this.addressBlock + ";";
+        return "[E]_" + this.validRecordsCount + "_" + this.addressBlock + ";";
     }
 }

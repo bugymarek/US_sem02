@@ -12,7 +12,7 @@ import sun.java2d.pipe.AATileGenerator;
  *
  * @author Bugy
  */
-public class InternalNode extends Node implements ISavable{
+public class InternalNode extends Node {
     private Node leftNode;
     private Node rightNode;
     
@@ -38,6 +38,6 @@ public class InternalNode extends Node implements ISavable{
 
     @Override
     public String save() {
-        return "I;";
+        return "[I];";
     }
 }

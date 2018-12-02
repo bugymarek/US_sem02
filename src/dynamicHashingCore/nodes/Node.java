@@ -11,9 +11,9 @@ import dynamicHashingCore.ISavable;
  *
  * @author Bugy
  */
-public class Node {
-    protected Node father;
-    protected int depth;
+public class Node implements ISavable{
+    private Node father;
+    private int depth;
 
     public Node(Node father, int depth) {
         this.father = father;
@@ -36,4 +36,9 @@ public class Node {
         this.depth = depth;
     }
 
+    @Override
+    public String save() {
+       return "no define";
+    }
+    
 }
