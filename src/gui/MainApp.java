@@ -5,8 +5,14 @@
  */
 package gui;
 
+import appCore.Core;
+import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -15,6 +21,8 @@ import javax.swing.text.html.HTMLEditorKit;
  * @author Bugy
  */
 public class MainApp extends javax.swing.JDialog {
+
+    private Core core;
 
     /**
      * Creates new form MainApp
@@ -26,14 +34,70 @@ public class MainApp extends javax.swing.JDialog {
                 "Chcete načítať exitstujúcu databázú dát",
                 "Uložisko dát",
                 JOptionPane.YES_NO_OPTION);
-        if(result == JOptionPane.YES_OPTION){
-            System.out.println("ano");
-        }
-        
-        if(result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION ){
-            System.out.println("nie");
+        if (result == JOptionPane.YES_OPTION) {
+            DialogFileNames dialogFileNames = new DialogFileNames(parent, true);
+            if (dialogFileNames.isCancel()) {
+                String message = "************************************************************************************************\n"
+                        + "                             Nepodarilo sa načítať databázu zo súborov" + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.ERR);
+                return;
+            }
+
+            String fileMainNeme = dialogFileNames.getTextFieldID();
+            String fileAdditionName = dialogFileNames.geteTxtFieldIDAndCadasterName();
+            this.core = new Core(fileMainNeme, fileAdditionName);
+            dynamicHashingCore.DynamicHashing dh1 = core.getDynamicHashingRealty();
+            dynamicHashingCore.DynamicHashing dh2 = core.getDynamicHashingRealtyInCadaster();
+
+            if (dh1 == null || dh2 == null) {
+                String message = "************* Nepodarilo sa načítať databázu zo súborov*****************************************\n"
+                        + " Prefix súboru nehnuteľnosti  podľa id: " + fileMainNeme + "\n"
+                        + " Prefix súboru nehnuteľnosti podľa súp. čísla a názvu katastra: " + fileAdditionName + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.ERR);
+            } else {
+                String message = "************************************************************************************************\n"
+                        + "                             Úspešné načítanie databázy" + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.SUC);
+            }
+
         }
 
+        if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
+            DialogNewFiles dialogNewFiles = new DialogNewFiles(parent, true);
+            if (dialogNewFiles.isCancel()) {
+                String message = "************************************************************************************************\n"
+                        + "                             Nepodarilo sa vytvoriť novú databázu" + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.ERR);
+                return;
+            }
+            this.core = new Core(dialogNewFiles.getTextFieldID(),
+                    dialogNewFiles.geteTxtFieldIDAndCadasterName(),
+                    dialogNewFiles.getMainFactor(),
+                    dialogNewFiles.getAdditionFactor(),
+                    dialogNewFiles.getMainFactor()
+            );
+            dynamicHashingCore.DynamicHashing dh1 = core.getDynamicHashingRealty();
+            dynamicHashingCore.DynamicHashing dh2 = core.getDynamicHashingRealtyInCadaster();
+            
+
+            if (dh1 == null || dh2 == null || !core.saveToConfigFiles()) {
+                String message = "*************       Nepodarilo sa vytvoriť novú databázu    *****************************************\n"
+                        + " Prefix súboru nehnuteľnosti  podľa id: " + dialogNewFiles.getTextFieldID() + "\n"
+                        + " Prefix súboru nehnuteľnosti podľa súp. čísla a názvu katastra: " + dialogNewFiles.geteTxtFieldIDAndCadasterName() + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.ERR);
+            } else {
+                String message = "************************************************************************************************\n"
+                        + "                             Úspešné vytvorenie databázy" + "\n"
+                        + "*******************************************************************************************************";
+                addToConsole(message, State.SUC);
+            }
+
+        }
     }
 
     /**
@@ -257,7 +321,7 @@ public class MainApp extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        core.saveToConfigFiles();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -336,4 +400,42 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldNameRealty;
     private javax.swing.JTextPane jTextPaneConsole;
     // End of variables declaration//GEN-END:variables
+
+    public enum State {
+        ERR,
+        SUC,
+        NON
+    }
+
+    private void addToConsole(String value, State state) {
+        switch (state) {
+            case ERR:
+                addColoredTextRow(value, Color.RED);
+                break;
+            case SUC:
+                addColoredTextRow(value, new Color(0, 153, 0));
+                break;
+            case NON:
+                addColoredTextRow(value, Color.BLACK);
+                break;
+        }
+        addColoredTextRow("====================================================================================================", Color.BLACK);
+
+    }
+
+    private void addColoredTextRow(String text, Color color) {
+        StyledDocument doc = jTextPaneConsole.getStyledDocument();
+
+        Style style = jTextPaneConsole.addStyle("Color Style", null);
+        StyleConstants.setForeground(style, color);
+
+        try {
+            doc.insertString(doc.getLength(), text + "\n", style);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+//        String rowHtml = "<pre style=\"color:" + color + "\">" + text + "</pre>";
+//        addHtmlComponent(rowHtml);
+
+    }
 }
