@@ -128,6 +128,9 @@ public class MainApp extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
+        jButton4 = new javax.swing.JButton();
+        jTextFieldGeneratorRealtyCount = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -252,15 +255,40 @@ public class MainApp extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Zmeň", jPanel6);
 
+        jButton4.setText("Generuj");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Počet nehnuteľností *");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 323, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(jTextFieldGeneratorRealtyCount, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 149, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel5)
+                .addGap(0, 0, 0)
+                .addComponent(jTextFieldGeneratorRealtyCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 444, Short.MAX_VALUE)
+                .addComponent(jButton4)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Generátor", jPanel4);
@@ -400,6 +428,40 @@ public class MainApp extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if (isEmptyTextField(jTextFieldGeneratorRealtyCount.getText())) {
+            JOptionPane.showMessageDialog(this,
+                    "Vyplnte všetky polička označene hviezdičkou.(*)",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        String result = MainApp.tryParseToInteger(jTextFieldGeneratorRealtyCount.getText());
+        if (result != null) {
+            JOptionPane.showMessageDialog(this,
+                    "Zadali ste text do poľa určeného pre číslo.",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int resultGenerate = core.generateRealties(getInt(jTextFieldGeneratorRealtyCount.getText()));
+        
+        if (resultGenerate == 0) {
+            String message = "************************************************************************************************\n"
+                    + "                             Úspešné vygenerovanie dát" + "\n"
+                    + "*******************************************************************************************************";
+            addToConsole(message, State.SUC);
+        } else {
+            String message = "************************************************************************************************\n"
+                    + "                             Počet neúspešne vygenerovaných záznamov" + resultGenerate +  "\n"
+                    + "*******************************************************************************************************";
+            addToConsole(message, State.NON);
+        }
+        
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     public static String tryParseToInteger(String term) {
         try {
             Integer.parseInt(term);
@@ -477,10 +539,12 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -491,6 +555,7 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextFieldDescription;
+    private javax.swing.JTextField jTextFieldGeneratorRealtyCount;
     private javax.swing.JTextField jTextFieldIDRealty;
     private javax.swing.JTextField jTextFieldIDRealtyInCadaster;
     private javax.swing.JTextField jTextFieldNameCadaster;

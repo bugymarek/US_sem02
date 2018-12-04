@@ -13,6 +13,7 @@ import entities.RealtyInCadaster;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ public class Core {
     private RandomAccessFile unsrotedFile;
     private DynamicHashing<RealtyID> dynamicHashingRealty;
     private DynamicHashing<RealtyInCadaster> dynamicHashingRealtyInCadaster;
+    private Random generatorSeeds = new Random();
 
     public Core(String fileMainName, String fileAdditionName, int mainFactor, int additionFactor, int maxHashSize) {
         this.dynamicHashingRealty = new DynamicHashing(fileMainName, mainFactor, additionFactor, this.TEPLATE_REALTY_ID, maxHashSize);
@@ -192,4 +194,53 @@ public class Core {
             }
         }
     }
+
+    public int generateRealties(int count) {
+        Random randomGenerator = new Random(generatorSeeds.nextInt());
+
+        int failedAddedCount = 0;
+        for (int i = 0; i < count; i++) {
+            int registerNumber = getRandomId(8, 9);
+            int idRealty = randomGenerator.nextInt(999999999);
+            String cadasterName = getRandomString(randomGenerator.nextInt(10) + 5, false);
+            String desc = getRandomString(randomGenerator.nextInt(16) + 4, true);
+
+            int result = addRealty(registerNumber, idRealty, cadasterName, desc);
+            if (result != 0) {
+                failedAddedCount++;
+            }
+        }
+        return failedAddedCount;
+    }
+
+    private String getRandomString(int length, boolean numbers) {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if (numbers) {
+            SALTCHARS += "123456789";
+        }
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random(generatorSeeds.nextInt());
+        int index;
+        while (salt.length() < length) { // length of the random string.
+            index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+    }
+
+    private int getRandomId(int fromNumeralCount, int toNumeralCount) {
+        Random randomGenerator = new Random(generatorSeeds.nextInt());
+        int lenth = randomGenerator.nextInt(toNumeralCount - fromNumeralCount) + fromNumeralCount;
+        String strNumper = new String();
+        for (int j = 0; j < lenth; j++) {
+            if (j == 0) {
+                strNumper += randomGenerator.nextInt(8) + 1;
+            } else {
+                strNumper += randomGenerator.nextInt(9);
+            }
+        }
+        return Integer.parseInt(strNumper);
+    }
+
 }
