@@ -119,10 +119,10 @@ public class MainApp extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jTextFieldIDRealtyInCadaster = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jTextFieldNameRealty = new javax.swing.JTextField();
+        jTextFieldNameCadaster = new javax.swing.JTextField();
         jTextFieldDescription = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextFieldIDRealty3 = new javax.swing.JTextField();
+        jTextFieldIDRealty = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -173,6 +173,11 @@ public class MainApp extends javax.swing.JDialog {
         jLabel4.setText("Identifikačné číslo nehnuteľnosti *");
 
         jButton3.setText("Vlož");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -181,9 +186,9 @@ public class MainApp extends javax.swing.JDialog {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldIDRealty3)
+                    .addComponent(jTextFieldIDRealty)
                     .addComponent(jTextFieldDescription)
-                    .addComponent(jTextFieldNameRealty)
+                    .addComponent(jTextFieldNameCadaster)
                     .addComponent(jTextFieldIDRealtyInCadaster)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -205,7 +210,7 @@ public class MainApp extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldNameRealty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextFieldNameCadaster, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -213,7 +218,7 @@ public class MainApp extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldIDRealty3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTextFieldIDRealty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
                 .addComponent(jButton3)
                 .addContainerGap())
@@ -274,7 +279,7 @@ public class MainApp extends javax.swing.JDialog {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -332,6 +337,88 @@ public class MainApp extends javax.swing.JDialog {
             addToConsole(message, State.ERR);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String idRealtyInCadaster = jTextFieldIDRealtyInCadaster.getText();
+        String nameCadaster = jTextFieldNameCadaster.getText();
+        String desc = jTextFieldDescription.getText();
+        String id = jTextFieldIDRealty.getText();
+        if (isEmptyTextField(idRealtyInCadaster)
+                || isEmptyTextField(nameCadaster)
+                || isEmptyTextField(desc)
+                || isEmptyTextField(id)) {
+            JOptionPane.showMessageDialog(this,
+                    "Vyplnte všetky polička označene hviezdičkou.(*)",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String result = tryParseToInteger(idRealtyInCadaster);
+        String result1 = tryParseToInteger(id);
+        if (result != null || result1 != null) {
+            JOptionPane.showMessageDialog(this,
+                    "Zadali ste text do poľa určeného pre číslo.",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int addedResult = core.addRealty(getInt(id), getInt(idRealtyInCadaster), nameCadaster, desc);
+        String message = new String();
+        switch (addedResult) {
+            case 0:
+                message = "Úspešne vloženie nehnuteľnosti.\n";
+                break;
+            case -1:
+                message = "Neúspešne vloženie nehnuteľnosti. Nehnuteľnosť s identifikačným číslom sa v databáze už nachádza. \n";
+                break;
+            case -2:
+                message = "Neúspešne vloženie nehnuteľnosti. Nehnuteľnosť podľa súpisného čísla a názvu katastra sa v databáze už nachádza.\n";
+                break;
+            case -3:
+                message = "Neúspešne vloženie nehnuteľnosti. Nepodarilo sa vložiť nehnuteľnosť do neusporiadaného súboru.";
+                break;
+            case -4:
+                message = "Neúspešne vloženie nehnuteľnosti do dynamického hašu podľa identifikačného čísla. Ale podarilo sa vložiť do neusporiadaného súboru.\n";
+                break;
+            case -5:
+                message = "Neúspešne vloženie nehnuteľnosti do dynamického hašu podľa sup. čísla a názvu katastu. "
+                        + "Ale podarilo sa vložiť do neusporiadaného súboru a do dynamického hašu podľa identifikačného čísla.\n";
+                break;
+        }
+        message += "******************************************************\n"
+                + " identifikačné číslo nehnuteľnosti: " + id + "\n"
+                + " súpisné číslo: " + idRealtyInCadaster + "\n"
+                + " názov katastru: " + nameCadaster + "\n"
+                + " popis: " + desc + "\n"
+                + "******************************************************";
+        if (addedResult == 0) {
+            addToConsole(message, State.SUC);
+        } else {
+            addToConsole(message, State.ERR);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    public static String tryParseToInteger(String term) {
+        try {
+            Integer.parseInt(term);
+            return null;
+        } catch (NumberFormatException e) {
+            return "Zadali ste text do poľa určeného pre číslo.";
+        }
+    }
+
+    public static boolean isEmptyTextField(String input) {
+        if (input == null || input.isEmpty() || input.trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private int getInt(String term) {
+        return Integer.parseInt(term);
+    }
 
     /**
      * @param args the command line arguments
@@ -404,9 +491,9 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextFieldDescription;
-    private javax.swing.JTextField jTextFieldIDRealty3;
+    private javax.swing.JTextField jTextFieldIDRealty;
     private javax.swing.JTextField jTextFieldIDRealtyInCadaster;
-    private javax.swing.JTextField jTextFieldNameRealty;
+    private javax.swing.JTextField jTextFieldNameCadaster;
     private javax.swing.JTextPane jTextPaneConsole;
     // End of variables declaration//GEN-END:variables
 

@@ -37,13 +37,24 @@ public class RealtyInCadaster implements IRecord<RealtyInCadaster>{
     /**
      * For find by id
      */
-    public RealtyInCadaster(int registerNumer) {
+    public RealtyInCadaster(int registerNumer, String cadasterName) {
         this.registerNumer = registerNumer;
+        this.cadasterName = cadasterName;
     }
+
+    public int getRegisterNumer() {
+        return registerNumer;
+    }
+
+    public String getCadasterName() {
+        return cadasterName;
+    }
+    
+    
 
     @Override
     public boolean equalsData(RealtyInCadaster data) {
-        return this.registerNumer == data.registerNumer;
+        return registerNumer == data.getRegisterNumer() && cadasterName.equals(data.getCadasterName());
     }
 
     @Override
@@ -59,8 +70,6 @@ public class RealtyInCadaster implements IRecord<RealtyInCadaster>{
             this.cadasterName += invalidCharactersSubstring;
         }
         converterToByteArray.writeString(this.cadasterName);
-        
-        System.out.println(converterToByteArray.toByteArray().length);
 
         return converterToByteArray.toByteArray();
     }

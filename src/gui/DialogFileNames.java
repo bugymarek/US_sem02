@@ -43,6 +43,8 @@ public class DialogFileNames extends javax.swing.JDialog {
 
         jLabel2.setText("Prefix súboru nehnuteľnosti  podľa id*");
 
+        TextFieldID.setText("RealtyID");
+
         OkButton.setText("Ok");
         OkButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -56,6 +58,8 @@ public class DialogFileNames extends javax.swing.JDialog {
                 cancelButtonActionPerformed(evt);
             }
         });
+
+        TextFieldIDAndCadasterName.setText("RelaltySupCisloAKataster");
 
         jLabel1.setText("Prefix súboru nehnuteľnosti podľa súp. čísla a názvu katastra *");
 

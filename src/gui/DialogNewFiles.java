@@ -154,11 +154,11 @@ public class DialogNewFiles extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void OkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OkButtonActionPerformed
-        if (isEmptyTextField(TextFieldIDAndCadasterName.getText())
-                || isEmptyTextField(TextFieldID.getText())
-                || isEmptyTextField(jTextFieldMainFactor.getText())
-                || isEmptyTextField(jTextFieldAdditionFactor.getText())
-                || isEmptyTextField(jTextFieldMaxHashSize.getText())) {
+        if (MainApp.isEmptyTextField(TextFieldIDAndCadasterName.getText())
+                || MainApp.isEmptyTextField(TextFieldID.getText())
+                || MainApp.isEmptyTextField(jTextFieldMainFactor.getText())
+                || MainApp.isEmptyTextField(jTextFieldAdditionFactor.getText())
+                || MainApp.isEmptyTextField(jTextFieldMaxHashSize.getText())) {
             JOptionPane.showMessageDialog(this,
                     "Vyplnte všetky polička označene hviezdičkou.(*)",
                     "Pozor",
@@ -166,9 +166,9 @@ public class DialogNewFiles extends javax.swing.JDialog {
             return;
         }
         
-        String result = tryParseToInteger(jTextFieldMainFactor.getText());
-        String result1 = tryParseToInteger(jTextFieldAdditionFactor.getText());
-        String result2 = tryParseToInteger(jTextFieldMaxHashSize.getText());
+        String result = MainApp.tryParseToInteger(jTextFieldMainFactor.getText());
+        String result1 = MainApp.tryParseToInteger(jTextFieldAdditionFactor.getText());
+        String result2 = MainApp.tryParseToInteger(jTextFieldMaxHashSize.getText());
         if (result != null || result1 != null || result2 != null) {
             JOptionPane.showMessageDialog(this,
                     "Zadali ste text do poľa určeného pre číslo.",
@@ -187,13 +187,6 @@ public class DialogNewFiles extends javax.swing.JDialog {
     private void jTextFieldMaxHashSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldMaxHashSizeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldMaxHashSizeActionPerformed
-
-    private boolean isEmptyTextField(String input) {
-        if (input == null || input.isEmpty() || input.trim().equals("")) {
-            return true;
-        }
-        return false;
-    }
 
     public boolean isCancel() {
         return cancel;
@@ -218,16 +211,6 @@ public class DialogNewFiles extends javax.swing.JDialog {
     public String geteTxtFieldIDAndCadasterName() {
         return TextFieldIDAndCadasterName.getText();
     }  
-    
-    public static String tryParseToInteger(String term) {
-        try {
-            Integer.parseInt(term);
-            return null;
-        } catch (NumberFormatException e) {
-            return "Zadali ste text do poľa určeného pre číslo.";
-        }
-    }
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OkButton;

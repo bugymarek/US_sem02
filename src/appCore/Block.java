@@ -5,7 +5,8 @@
  */
 package appCore;
 
-import dynamicHashingCore.*;
+import dynamicHashingCore.Converter;
+import dynamicHashingCore.IRecord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

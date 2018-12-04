@@ -70,6 +70,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="TextFieldID">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="RealtyID"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="OkButton">
       <Properties>
@@ -88,6 +91,9 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="TextFieldIDAndCadasterName">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="RelaltySupCisloAKataster"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
