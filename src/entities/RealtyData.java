@@ -8,6 +8,7 @@ package entities;
 import dynamicHashingCore.IRecord;
 import constants.CommonConstants;
 import dynamicHashingCore.Converter;
+
 /**
  *
  * @author Bugy
@@ -35,12 +36,25 @@ public class RealtyData implements IRecord<RealtyData> {
         this.cadasterName = "cdasterName";
         this.desc = "description";
     }
-    
+
     /**
      * For find by id
      */
     public RealtyData(int id) {
         this.id = id;
+        this.idInCadaster = -1;
+        this.cadasterName = "cdasterName";
+        this.desc = "description";
+    }
+
+    /**
+     * For find by registrationNumber and cadasterName
+     */
+    public RealtyData(int idInCadaster, String cadasterName) {
+        this.id = -1;
+        this.idInCadaster = idInCadaster;
+        this.cadasterName = cadasterName;
+        this.desc = "description";
     }
 
     public int getId() {
@@ -77,7 +91,11 @@ public class RealtyData implements IRecord<RealtyData> {
 
     @Override
     public boolean equalsData(RealtyData data) {
-        return this.id == data.id;
+        if (data.getId() > -1) {
+            return this.id == data.getId();
+        } else {
+            return this.idInCadaster == data.getIdInCadaster() && this.cadasterName.equals(data.getCadasterName());
+        }
     }
 
     @Override

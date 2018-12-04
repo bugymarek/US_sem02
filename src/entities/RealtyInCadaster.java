@@ -49,8 +49,10 @@ public class RealtyInCadaster implements IRecord<RealtyInCadaster>{
     public String getCadasterName() {
         return cadasterName;
     }
-    
-    
+
+    public int getAddress() {
+        return address;
+    }
 
     @Override
     public boolean equalsData(RealtyInCadaster data) {

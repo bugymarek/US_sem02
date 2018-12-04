@@ -7,6 +7,8 @@ package appCore;
 
 import dynamicHashingCore.DynamicHashing;
 import appCore.Record;
+import com.google.gson.JsonObject;
+import dynamicHashingCore.IRecord;
 import entities.RealtyData;
 import entities.RealtyID;
 import entities.RealtyInCadaster;
@@ -194,6 +196,15 @@ public class Core {
             }
         }
     }
+    
+    private RealtyData findRealtyInUnsortedFile(int address, IRecord record){
+        Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_BLOCK.getSize()));
+        Record findedRecord = block.findRecord(new Record(true, record));
+            if (findedRecord != null) {              
+                return (RealtyData)findedRecord.getData();
+            }
+        return null;
+    }
 
     public int generateRealties(int count) {
         Random randomGenerator = new Random(generatorSeeds.nextInt());
@@ -241,6 +252,50 @@ public class Core {
             }
         }
         return Integer.parseInt(strNumper);
+    }
+
+    public JsonObject findRealtyByID(int id) {
+        JsonObject jobj = new JsonObject();
+        RealtyID realtyID = (RealtyID) dynamicHashingRealty.find(new RealtyID(id));
+        if (realtyID == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla.");
+            return jobj;
+        }
+        
+        RealtyData realtyData = findRealtyInUnsortedFile(realtyID.getAddress(), new RealtyData(id));
+        if (realtyData == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla v neusporiadanom súbore.");
+            return jobj;
+        }
+        
+        jobj.addProperty("id", realtyData.getId());
+        jobj.addProperty("idRealty", realtyData.getIdInCadaster());
+        jobj.addProperty("cadasterName", realtyData.getCadasterName());
+        jobj.addProperty("desc", realtyData.getDesc());
+        
+        return jobj;
+    }
+    
+    public JsonObject findRealtyByRegistrationNumberAndCadasterName(int id, String name) {
+        JsonObject jobj = new JsonObject();
+        RealtyInCadaster realtyInCadaster = (RealtyInCadaster) dynamicHashingRealtyInCadaster.find(new RealtyInCadaster(id, name));
+        if (realtyInCadaster == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla.");
+            return jobj;
+        }
+        
+        RealtyData realtyData = findRealtyInUnsortedFile(realtyInCadaster.getAddress(), new RealtyData(id, name));
+        if (realtyData == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla v neusporiadanom súbore.");
+            return jobj;
+        }
+        
+        jobj.addProperty("id", realtyData.getId());
+        jobj.addProperty("idRealty", realtyData.getIdInCadaster());
+        jobj.addProperty("cadasterName", realtyData.getCadasterName());
+        jobj.addProperty("desc", realtyData.getDesc());
+        
+        return jobj;
     }
 
 }

@@ -74,4 +74,7 @@ public class RealtyID implements IRecord<RealtyID> {
         return "" + this.id;
     }
 
+    public int getAddress() {
+        return address;
+    }
 }
