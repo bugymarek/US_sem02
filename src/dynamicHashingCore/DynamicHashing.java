@@ -36,12 +36,12 @@ public class DynamicHashing<T> {
     private int nextFreeAddressAdditionFile;
     private ArrayList<Integer> freeAddresses;
     private Node root;
-    private int maxHashSize;
-    public static final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
+    private int maxHashSize;   
     private final Block TEMPLATE_MAIN_BLOCK;
     private final Block TEMPLATE_ADDOTION_BLOCK;
     private final Record<T> TEMPLATE_RECORD;
     private String FILE_NAME;
+    public static final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
     private static final String FILE_TYPE = ".hash";
     public static final String FILE_CONFIG_TYPE = ".txt";
 

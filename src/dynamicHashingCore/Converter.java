@@ -10,10 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -51,7 +48,7 @@ public class Converter {
             }
         }
 
-        void writeBoolean(boolean value) {
+        public void writeBoolean(boolean value) {
             try {
                 hlpOutStream.writeBoolean(value);
             } catch (IOException e) {
@@ -59,7 +56,7 @@ public class Converter {
             }
         }
 
-        void writeByteArray(byte[] value) {
+        public void writeByteArray(byte[] value) {
             try {
                 hlpOutStream.write(value);
             } catch (IOException e) {
@@ -102,7 +99,7 @@ public class Converter {
             }
         }
 
-        byte[] readByteArray(int size) {
+        public byte[] readByteArray(int size) {
             try {
                 byte[] byteArray = new byte[size];
                 for (int i = 0; i < size; i++) {

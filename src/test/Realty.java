@@ -140,7 +140,7 @@ public class Realty implements IRecord<Realty> {
 
     @Override
     public int getSize() {
-        return constants.CommonConstants.SIZE_IN_BYTE_REALTY;
+        return constants.CommonConstants.SIZE_IN_BYTE_REALTY_DATA;
     }
 
     @Override

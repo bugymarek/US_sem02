@@ -82,7 +82,6 @@ public class MainApp extends javax.swing.JDialog {
             );
             dynamicHashingCore.DynamicHashing dh1 = core.getDynamicHashingRealty();
             dynamicHashingCore.DynamicHashing dh2 = core.getDynamicHashingRealtyInCadaster();
-            
 
             if (dh1 == null || dh2 == null || !core.saveToConfigFiles()) {
                 String message = "*************       Nepodarilo sa vytvoriť novú databázu    *****************************************\n"
@@ -321,7 +320,17 @@ public class MainApp extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        core.saveToConfigFiles();
+        if (core.saveToConfigFiles()) {
+            String message = "************************************************************************************************\n"
+                    + "                             Úspešné uloženie databázy do súboru" + "\n"
+                    + "*******************************************************************************************************";
+            addToConsole(message, State.SUC);
+        } else {
+            String message = "************************************************************************************************\n"
+                    + "                             Neúspešné uloženie databázy do súboru" + "\n"
+                    + "*******************************************************************************************************";
+            addToConsole(message, State.ERR);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

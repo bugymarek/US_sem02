@@ -6,11 +6,7 @@
 package test;
 
 import test.Realty;
-import dynamicHashingCore.Record;
-import dynamicHashingCore.nodes.InternalNode;
-import constants.CommonConstants;
 import entities.RealtyInCadaster;
-import dynamicHashingCore.Block;
 import dynamicHashingCore.DynamicHashing;
 
 /**
@@ -27,7 +23,6 @@ public class US_sem02 {
         dynamicHashing.createNewFiles("subor");
         
         Test test = new Test(dynamicHashing);
-        test.checkInsertSaveAndLoad();
-        
+        test.checkInsertSaveAndLoad();            
     }
 }

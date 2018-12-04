@@ -12,34 +12,34 @@ import dynamicHashingCore.Converter;
  *
  * @author Bugy
  */
-public class Realty implements IRecord<Realty> {
+public class RealtyData implements IRecord<RealtyData> {
 
     private int id;
     private int idInCadaster;
-    private String cadsterName;
+    private String cadasterName;
     private String desc;
 
-    public Realty(int id, int idInCadaster, String cadsterName, String desc) {
+    public RealtyData(int id, int idInCadaster, String cadasterName, String desc) {
         this.id = id;
         this.idInCadaster = idInCadaster;
-        this.cadsterName = cadsterName;
+        this.cadasterName = cadasterName;
         this.desc = desc;
     }
 
     /**
      * Sets default values
      */
-    public Realty() {
+    public RealtyData() {
         this.id = -1;
         this.idInCadaster = -1;
-        this.cadsterName = "cdasterName";
+        this.cadasterName = "cdasterName";
         this.desc = "description";
     }
     
     /**
      * For find by id
      */
-    public Realty(int id) {
+    public RealtyData(int id) {
         this.id = id;
     }
 
@@ -51,8 +51,8 @@ public class Realty implements IRecord<Realty> {
         return idInCadaster;
     }
 
-    public String getCadsterName() {
-        return cadsterName;
+    public String getCadasterName() {
+        return cadasterName;
     }
 
     public String getDesc() {
@@ -67,8 +67,8 @@ public class Realty implements IRecord<Realty> {
         this.idInCadaster = idInCadaster;
     }
 
-    public void setCadsterName(String name) {
-        this.cadsterName = name;
+    public void setCadasterName(String name) {
+        this.cadasterName = name;
     }
 
     public void setDesc(String desc) {
@@ -76,7 +76,7 @@ public class Realty implements IRecord<Realty> {
     }
 
     @Override
-    public boolean equalsData(Realty data) {
+    public boolean equalsData(RealtyData data) {
         return this.id == data.id;
     }
 
@@ -87,12 +87,12 @@ public class Realty implements IRecord<Realty> {
         converterToByteArray.writeInt(this.id);
         converterToByteArray.writeInt(this.idInCadaster);
 
-        if (this.cadsterName.length() < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH) {
-            int invalidCharactersCount = CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH - this.cadsterName.length();
+        if (this.cadasterName.length() < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH) {
+            int invalidCharactersCount = CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH - this.cadasterName.length();
             String invalidCharactersSubstring = new StringBuilder(CommonConstants.INVALID_CHARACTERS).substring(0, invalidCharactersCount);
-            this.cadsterName += invalidCharactersSubstring;
+            this.cadasterName += invalidCharactersSubstring;
         }
-        converterToByteArray.writeString(this.cadsterName);
+        converterToByteArray.writeString(this.cadasterName);
 
         if (this.desc.length() < CommonConstants.REALTY_DESC_MAX_LENGTH) {
             int invalidCharactersCount = CommonConstants.REALTY_DESC_MAX_LENGTH - this.desc.length();
@@ -111,11 +111,11 @@ public class Realty implements IRecord<Realty> {
         int id = converterFromByteArray.readInt();
         int idInCadaster = converterFromByteArray.readInt();
 
-        String cadsterName = new String();
+        String cadasterName = new String();
         for (int i = 0; i < CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH; i++) {
             char charFromArr = converterFromByteArray.readChar();
             if (charFromArr != '$') {
-                cadsterName += Character.toString(charFromArr);
+                cadasterName += Character.toString(charFromArr);
             }
         }
 
@@ -127,17 +127,17 @@ public class Realty implements IRecord<Realty> {
             }
         }
 
-        return new Realty(id, idInCadaster, cadsterName, desc);
+        return new RealtyData(id, idInCadaster, cadasterName, desc);
     }
 
     @Override
     public int getSize() {
-        return constants.CommonConstants.SIZE_IN_BYTE_REALTY;
+        return constants.CommonConstants.SIZE_IN_BYTE_REALTY_DATA;
     }
 
     @Override
     public String toString() {
-        return "Realty{" + "id=" + id + ", idInCadaster=" + idInCadaster + ", cadsterName=" + cadsterName + ", desc=" + desc + '}';
+        return "Realty{" + "id=" + id + ", idInCadaster=" + idInCadaster + ", cadsterName=" + cadasterName + ", desc=" + desc + '}';
     }
 
     @Override
