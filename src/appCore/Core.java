@@ -428,4 +428,53 @@ public class Core {
         return jsonArray;
     }
 
+    public JsonArray getBlocksRealtyDataFromUnsortedFile() {
+        ArrayList<Block> arr = readAllBlocksFromUnsortedFile();
+        if (arr.isEmpty()) {
+            return null;
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        for (Block block : arr) {
+            JsonObject jobjBlock = new JsonObject();
+            jobjBlock.addProperty("address", block.getAddress());
+            jobjBlock.addProperty("factor", block.getFactor());
+            jobjBlock.addProperty("validCount", block.getValidRecordsCount());
+
+            JsonArray jsonArrayRecords = new JsonArray();
+            for (Record record : block.getRecordsList()) {
+                JsonObject jobjRecord = new JsonObject();
+                jobjRecord.addProperty("isValid", record.isIsValid());
+                jobjRecord.addProperty("id", ((RealtyData) record.getData()).getId());
+                jobjRecord.addProperty("registerNumber", ((RealtyData) record.getData()).getIdInCadaster());
+                jobjRecord.addProperty("cadasterName", ((RealtyData) record.getData()).getCadasterName());
+                jobjRecord.addProperty("desc", ((RealtyData) record.getData()).getDesc());
+
+                jsonArrayRecords.add(jobjRecord);
+            }
+            jobjBlock.add("records", jsonArrayRecords);
+
+            jsonArray.add(jobjBlock);
+        }
+
+        return jsonArray;
+    }
+    
+    public ArrayList<Block> readAllBlocksFromUnsortedFile() {
+        ArrayList<Block> blockArr = new ArrayList<>();
+        int offset = 0;
+        int fileLength= 0;
+        try {
+            fileLength = (int) unsrotedFile.length();
+        } catch (IOException ex) {
+            Logger.getLogger(DynamicHashing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        while (fileLength != offset) {
+            Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(offset));
+            blockArr.add(block);
+            offset += TEMPLATE_BLOCK.getSize();
+        }
+        return blockArr;
+    }
+
 }
