@@ -198,13 +198,13 @@ public class Core {
             }
         }
     }
-    
-    private RealtyData findRealtyInUnsortedFile(int address, IRecord record){
+
+    private RealtyData findRealtyInUnsortedFile(int address, IRecord record) {
         Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_BLOCK.getSize()));
         Record findedRecord = block.findRecord(new Record(true, record));
-            if (findedRecord != null) {              
-                return (RealtyData)findedRecord.getData();
-            }
+        if (findedRecord != null) {
+            return (RealtyData) findedRecord.getData();
+        }
         return null;
     }
 
@@ -263,21 +263,21 @@ public class Core {
             jobj.addProperty("err", "Nehnuteľnosť sa nenašla.");
             return jobj;
         }
-        
+
         RealtyData realtyData = findRealtyInUnsortedFile(realtyID.getAddress(), new RealtyData(id));
         if (realtyData == null) {
             jobj.addProperty("err", "Nehnuteľnosť sa nenašla v neusporiadanom súbore.");
             return jobj;
         }
-        
+
         jobj.addProperty("id", realtyData.getId());
         jobj.addProperty("idRealty", realtyData.getIdInCadaster());
         jobj.addProperty("cadasterName", realtyData.getCadasterName());
         jobj.addProperty("desc", realtyData.getDesc());
-        
+
         return jobj;
     }
-    
+
     public JsonObject findRealtyByRegistrationNumberAndCadasterName(int id, String name) {
         JsonObject jobj = new JsonObject();
         RealtyInCadaster realtyInCadaster = (RealtyInCadaster) dynamicHashingRealtyInCadaster.find(new RealtyInCadaster(id, name));
@@ -285,18 +285,18 @@ public class Core {
             jobj.addProperty("err", "Nehnuteľnosť sa nenašla.");
             return jobj;
         }
-        
+
         RealtyData realtyData = findRealtyInUnsortedFile(realtyInCadaster.getAddress(), new RealtyData(id, name));
         if (realtyData == null) {
             jobj.addProperty("err", "Nehnuteľnosť sa nenašla v neusporiadanom súbore.");
             return jobj;
         }
-        
+
         jobj.addProperty("id", realtyData.getId());
         jobj.addProperty("idRealty", realtyData.getIdInCadaster());
         jobj.addProperty("cadasterName", realtyData.getCadasterName());
         jobj.addProperty("desc", realtyData.getDesc());
-        
+
         return jobj;
     }
 
@@ -314,21 +314,117 @@ public class Core {
             jobjBlock.addProperty("addressNextBlock", block.getAddressNextBlock());
             jobjBlock.addProperty("factor", block.getFactor());
             jobjBlock.addProperty("validCount", block.getValidRecordsCount());
-            
+
             JsonArray jsonArrayRecords = new JsonArray();
-            for(dynamicHashingCore.Record record : block.getRecordsList()){
+            for (dynamicHashingCore.Record record : block.getRecordsList()) {
                 JsonObject jobjRecord = new JsonObject();
                 jobjRecord.addProperty("isValid", record.isIsValid());
-                jobjRecord.addProperty("id", ((RealtyID)record.getData()).getId());
-                jobjRecord.addProperty("address", ((RealtyID)record.getData()).getId());
-                
+                jobjRecord.addProperty("id", ((RealtyID) record.getData()).getId());
+                jobjRecord.addProperty("address", ((RealtyID) record.getData()).getAddress());
+
                 jsonArrayRecords.add(jobjRecord);
             }
             jobjBlock.add("records", jsonArrayRecords);
-            
+
             jsonArray.add(jobjBlock);
         }
-        
+
+        return jsonArray;
+    }
+
+    public JsonArray getBlocksRealtyByIdFromAdditionFile() {
+        ArrayList<dynamicHashingCore.Block> arr = dynamicHashingRealty.readAllBlocksFromAdditionFile();
+        if (arr.isEmpty()) {
+            return null;
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        for (dynamicHashingCore.Block block : arr) {
+            JsonObject jobjBlock = new JsonObject();
+            jobjBlock.addProperty("address", block.getAddress());
+            jobjBlock.addProperty("addressNextBlock", block.getAddressNextBlock());
+            jobjBlock.addProperty("factor", block.getFactor());
+            jobjBlock.addProperty("validCount", block.getValidRecordsCount());
+
+            JsonArray jsonArrayRecords = new JsonArray();
+            for (dynamicHashingCore.Record record : block.getRecordsList()) {
+                JsonObject jobjRecord = new JsonObject();
+                jobjRecord.addProperty("isValid", record.isIsValid());
+                jobjRecord.addProperty("id", ((RealtyID) record.getData()).getId());
+                jobjRecord.addProperty("address", ((RealtyID) record.getData()).getAddress());
+
+                jsonArrayRecords.add(jobjRecord);
+            }
+            jobjBlock.add("records", jsonArrayRecords);
+
+            jsonArray.add(jobjBlock);
+        }
+
+        return jsonArray;
+    }
+
+    public JsonArray getBlocksRealtyByIdInCadasterAndCadasterNameFromMainFile() {
+        ArrayList<dynamicHashingCore.Block> arr = dynamicHashingRealtyInCadaster.readAllBlocksFromMainFile();
+        if (arr.isEmpty()) {
+            return null;
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        for (dynamicHashingCore.Block block : arr) {
+            JsonObject jobjBlock = new JsonObject();
+            jobjBlock.addProperty("isValid", !dynamicHashingRealtyInCadaster.isBlocAddressFree(block.getAddress()));
+            jobjBlock.addProperty("address", block.getAddress());
+            jobjBlock.addProperty("addressNextBlock", block.getAddressNextBlock());
+            jobjBlock.addProperty("factor", block.getFactor());
+            jobjBlock.addProperty("validCount", block.getValidRecordsCount());
+
+            JsonArray jsonArrayRecords = new JsonArray();
+            for (dynamicHashingCore.Record record : block.getRecordsList()) {
+                JsonObject jobjRecord = new JsonObject();
+                jobjRecord.addProperty("isValid", record.isIsValid());
+                jobjRecord.addProperty("registerNumber", ((RealtyInCadaster) record.getData()).getRegisterNumer());
+                jobjRecord.addProperty("cadasterName", ((RealtyInCadaster) record.getData()).getCadasterName());
+                jobjRecord.addProperty("address", ((RealtyInCadaster) record.getData()).getAddress());
+
+                jsonArrayRecords.add(jobjRecord);
+            }
+            jobjBlock.add("records", jsonArrayRecords);
+
+            jsonArray.add(jobjBlock);
+        }
+
+        return jsonArray;
+    }
+
+    public JsonArray getBlocksRealtyByIdInCadasterAndCadasterNameFromAdditionFile() {
+        ArrayList<dynamicHashingCore.Block> arr = dynamicHashingRealtyInCadaster.readAllBlocksFromAdditionFile();
+        if (arr.isEmpty()) {
+            return null;
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        for (dynamicHashingCore.Block block : arr) {
+            JsonObject jobjBlock = new JsonObject();
+            jobjBlock.addProperty("address", block.getAddress());
+            jobjBlock.addProperty("addressNextBlock", block.getAddressNextBlock());
+            jobjBlock.addProperty("factor", block.getFactor());
+            jobjBlock.addProperty("validCount", block.getValidRecordsCount());
+
+            JsonArray jsonArrayRecords = new JsonArray();
+            for (dynamicHashingCore.Record record : block.getRecordsList()) {
+                JsonObject jobjRecord = new JsonObject();
+                jobjRecord.addProperty("isValid", record.isIsValid());
+                jobjRecord.addProperty("registerNumber", ((RealtyInCadaster) record.getData()).getRegisterNumer());
+                jobjRecord.addProperty("cadasterName", ((RealtyInCadaster) record.getData()).getCadasterName());
+                jobjRecord.addProperty("address", ((RealtyInCadaster) record.getData()).getAddress());
+
+                jsonArrayRecords.add(jobjRecord);
+            }
+            jobjBlock.add("records", jsonArrayRecords);
+
+            jsonArray.add(jobjBlock);
+        }
+
         return jsonArray;
     }
 

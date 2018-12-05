@@ -103,4 +103,6 @@ public class RealtyInCadaster implements IRecord<RealtyInCadaster>{
     public String getHashKey() {
         return "" + this.registerNumer + this.cadasterName;
     }
+    
+    
 }

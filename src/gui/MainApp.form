@@ -573,6 +573,9 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Vyp&#xed;&#x161; prepl&#x148;ovac&#xed; s&#xfa;bor"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton9ActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -623,6 +626,9 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Vyp&#xed;&#x161; prepl&#x148;ovac&#xed; s&#xfa;bor"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton11ActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

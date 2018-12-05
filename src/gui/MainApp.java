@@ -435,6 +435,11 @@ public class MainApp extends javax.swing.JDialog {
         });
 
         jButton9.setText("Vypíš preplňovací súbor");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -467,6 +472,11 @@ public class MainApp extends javax.swing.JDialog {
         });
 
         jButton11.setText("Vypíš preplňovací súbor");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
@@ -765,7 +775,7 @@ public class MainApp extends javax.swing.JDialog {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         JsonArray result = core.getBlocksRealtyByIdFromMainFile();
-
+        
         if (result == null) {
             addToConsole("V súbore niesu žiadne bloky", State.NON);
         } else {
@@ -803,8 +813,121 @@ public class MainApp extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
+        JsonArray result = core.getBlocksRealtyByIdInCadasterAndCadasterNameFromMainFile();
+        
+        if (result == null) {
+            addToConsole("V súbore niesu žiadne bloky", State.NON);
+        } else {
+            for (JsonElement jsonElement : result) {
+                JsonObject block = (JsonObject) jsonElement;
+
+                String message = "******************************************************\n"
+                        + " stav bloku: " + (block.get("isValid").getAsBoolean() ? "platný" : "neplatný") + "\n"
+                        + " adresa: " + block.get("address").getAsString() + "\n"
+                        + " adresa nasledujúceho zreťazeného bloku: " + block.get("addressNextBlock").getAsString() + "\n"
+                        + " faktor: " + block.get("factor").getAsString() + "\n"
+                        + " počet platných záznamov: " + block.get("validCount").getAsString() + "\n"
+                        + "******************************************************";
+                addToConsole(message, State.SUC);
+                String rowsHtml = "";
+                for (JsonElement jsonElementRecord : block.get("records").getAsJsonArray()) {
+                    JsonObject record = (JsonObject) jsonElementRecord;
+
+                    ArrayList<String> dataArr = new ArrayList<>();
+                    dataArr.add(record.get("isValid").getAsBoolean() ? "platný" : "neplatný");
+                    dataArr.add(record.get("registerNumber").getAsString());
+                    dataArr.add(record.get("cadasterName").getAsString());
+                    dataArr.add(record.get("address").getAsString());
+
+                    rowsHtml += "\n";
+                    rowsHtml += managerHTML.createTableRow(dataArr);
+                }
+
+                String[] headerArr = {"Stav záznamu", "Supisné číslo", "Názov katastrálneho územia",  "adresa"};
+                String headerHtml = managerHTML.createTableHeader(headerArr);
+                String tableHtml = managerHTML.createTable(headerHtml, rowsHtml);
+                addHtmlComponent(tableHtml);
+                addHtmlComponent("<br>");
+            }
+        }
     }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        JsonArray result = core.getBlocksRealtyByIdFromAdditionFile();
+        
+        if (result == null) {
+            addToConsole("V súbore niesu žiadne bloky", State.NON);
+        } else {
+            for (JsonElement jsonElement : result) {
+                JsonObject block = (JsonObject) jsonElement;
+
+                String message = "******************************************************\n"
+                        + " adresa: " + block.get("address").getAsString() + "\n"
+                        + " adresa nasledujúceho zreťazeného bloku: " + block.get("addressNextBlock").getAsString() + "\n"
+                        + " faktor: " + block.get("factor").getAsString() + "\n"
+                        + " počet platných záznamov: " + block.get("validCount").getAsString() + "\n"
+                        + "******************************************************";
+                addToConsole(message, State.SUC);
+                String rowsHtml = "";
+                for (JsonElement jsonElementRecord : block.get("records").getAsJsonArray()) {
+                    JsonObject record = (JsonObject) jsonElementRecord;
+
+                    ArrayList<String> dataArr = new ArrayList<>();
+                    dataArr.add(record.get("isValid").getAsBoolean() ? "platný" : "neplatný");
+                    dataArr.add(record.get("id").getAsString());
+                    dataArr.add(record.get("address").getAsString());
+
+                    rowsHtml += "\n";
+                    rowsHtml += managerHTML.createTableRow(dataArr);
+                }
+
+                String[] headerArr = {"Stav záznamu", "Identifikačné číslo", "adresa"};
+                String headerHtml = managerHTML.createTableHeader(headerArr);
+                String tableHtml = managerHTML.createTable(headerHtml, rowsHtml);
+                addHtmlComponent(tableHtml);
+                addHtmlComponent("<br>");
+            }
+        }  
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        JsonArray result = core.getBlocksRealtyByIdInCadasterAndCadasterNameFromAdditionFile();
+        
+        if (result == null) {
+            addToConsole("V súbore niesu žiadne bloky", State.NON);
+        } else {
+            for (JsonElement jsonElement : result) {
+                JsonObject block = (JsonObject) jsonElement;
+
+                String message = "******************************************************\n"
+                        + " adresa: " + block.get("address").getAsString() + "\n"
+                        + " adresa nasledujúceho zreťazeného bloku: " + block.get("addressNextBlock").getAsString() + "\n"
+                        + " faktor: " + block.get("factor").getAsString() + "\n"
+                        + " počet platných záznamov: " + block.get("validCount").getAsString() + "\n"
+                        + "******************************************************";
+                addToConsole(message, State.SUC);
+                String rowsHtml = "";
+                for (JsonElement jsonElementRecord : block.get("records").getAsJsonArray()) {
+                    JsonObject record = (JsonObject) jsonElementRecord;
+
+                    ArrayList<String> dataArr = new ArrayList<>();
+                    dataArr.add(record.get("isValid").getAsBoolean() ? "platný" : "neplatný");
+                    dataArr.add(record.get("registerNumber").getAsString());
+                    dataArr.add(record.get("cadasterName").getAsString());
+                    dataArr.add(record.get("address").getAsString());
+
+                    rowsHtml += "\n";
+                    rowsHtml += managerHTML.createTableRow(dataArr);
+                }
+
+                String[] headerArr = {"Stav záznamu", "Supisné číslo", "Názov katastrálneho územia",  "adresa"};
+                String headerHtml = managerHTML.createTableHeader(headerArr);
+                String tableHtml = managerHTML.createTable(headerHtml, rowsHtml);
+                addHtmlComponent(tableHtml);
+                addHtmlComponent("<br>");
+            }
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
 
     public static String tryParseToInteger(String term) {
         try {
