@@ -6,9 +6,15 @@
 package gui;
 
 import appCore.Core;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -24,6 +30,7 @@ import javax.swing.text.html.HTMLEditorKit;
 public class MainApp extends javax.swing.JDialog {
 
     private Core core;
+    private ManagerHTML managerHTML;
 
     /**
      * Creates new form MainApp
@@ -31,6 +38,9 @@ public class MainApp extends javax.swing.JDialog {
     public MainApp(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        configTextPane();
+        managerHTML = new ManagerHTML();
+
         int result = JOptionPane.showConfirmDialog(this,
                 "Chcete načítať exitstujúcu databázú dát",
                 "Uložisko dát",
@@ -98,6 +108,14 @@ public class MainApp extends javax.swing.JDialog {
             }
 
         }
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                core.saveToConfigFiles();
+                System.exit(0);
+            }
+        });
     }
 
     /**
@@ -142,6 +160,14 @@ public class MainApp extends javax.swing.JDialog {
         jButton4 = new javax.swing.JButton();
         jTextFieldGeneratorRealtyCount = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jButton7 = new javax.swing.JButton();
+        jPanel10 = new javax.swing.JPanel();
+        jButton8 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
+        jPanel11 = new javax.swing.JPanel();
+        jButton10 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -162,8 +188,8 @@ public class MainApp extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 770, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -210,7 +236,7 @@ public class MainApp extends javax.swing.JDialog {
                             .addComponent(jLabel3)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
-                        .addGap(0, 118, Short.MAX_VALUE))
+                        .addGap(0, 146, Short.MAX_VALUE))
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -261,7 +287,7 @@ public class MainApp extends javax.swing.JDialog {
                     .addComponent(jTextFieldRegistrationNumberRealtyFind)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jLabel6)
-                        .addGap(0, 96, Short.MAX_VALUE))
+                        .addGap(0, 124, Short.MAX_VALUE))
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -350,7 +376,7 @@ public class MainApp extends javax.swing.JDialog {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 323, Short.MAX_VALUE)
+            .addGap(0, 351, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -380,7 +406,7 @@ public class MainApp extends javax.swing.JDialog {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
                             .addComponent(jTextFieldGeneratorRealtyCount, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 149, Short.MAX_VALUE)))
+                        .addGap(0, 177, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -396,6 +422,98 @@ public class MainApp extends javax.swing.JDialog {
         );
 
         jTabbedPane1.addTab("Generátor", jPanel4);
+
+        jButton7.setText("Vypíš neutriedený súbor");
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Nehnuteľnosti podľa identifikačného čísla"));
+
+        jButton8.setText("Vypíš hlavný súbor");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jButton9.setText("Vypíš preplňovací súbor");
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton9)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Nehnuteľnosti podľa sup. čísla a názvu katastra"));
+
+        jButton10.setText("Vypíš hlavný súbor");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
+        jButton11.setText("Vypíš preplňovací súbor");
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton11)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jButton7)
+                .addGap(49, 49, 49)
+                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43)
+                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(162, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Výpis", jPanel9);
 
         jButton2.setText("Ulož do súboru");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -431,9 +549,9 @@ public class MainApp extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -443,9 +561,9 @@ public class MainApp extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
@@ -540,7 +658,7 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         String result = MainApp.tryParseToInteger(jTextFieldGeneratorRealtyCount.getText());
         if (result != null) {
             JOptionPane.showMessageDialog(this,
@@ -549,9 +667,9 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         int resultGenerate = core.generateRealties(getInt(jTextFieldGeneratorRealtyCount.getText()));
-        
+
         if (resultGenerate == 0) {
             String message = "************************************************************************************************\n"
                     + "                             Úspešné vygenerovanie dát" + "\n"
@@ -559,11 +677,11 @@ public class MainApp extends javax.swing.JDialog {
             addToConsole(message, State.SUC);
         } else {
             String message = "************************************************************************************************\n"
-                    + "                             Počet neúspešne vygenerovaných záznamov" + resultGenerate +  "\n"
+                    + "                             Počet neúspešne vygenerovaných záznamov" + resultGenerate + "\n"
                     + "*******************************************************************************************************";
             addToConsole(message, State.NON);
         }
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -575,7 +693,7 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         String result = MainApp.tryParseToInteger(id);
         if (result != null) {
             JOptionPane.showMessageDialog(this,
@@ -584,7 +702,7 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         JsonObject resultObject = core.findRealtyByID(getInt(id));
         if (resultObject.get("err") != null) {
             String message = resultObject.get("err").getAsString() + "\n";
@@ -608,14 +726,14 @@ public class MainApp extends javax.swing.JDialog {
         String id = jTextFieldIDFind.getText();
         String cadasterName = jTextFieldCadasterNameFind.getText();
         if (isEmptyTextField(id)
-                ||isEmptyTextField(cadasterName)) {
+                || isEmptyTextField(cadasterName)) {
             JOptionPane.showMessageDialog(this,
                     "Vyplnte všetky polička označene hviezdičkou.(*)",
                     "Pozor",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         String result = MainApp.tryParseToInteger(id);
         if (result != null) {
             JOptionPane.showMessageDialog(this,
@@ -624,7 +742,7 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         JsonObject resultObject = core.findRealtyByRegistrationNumberAndCadasterName(getInt(id), cadasterName);
         if (resultObject.get("err") != null) {
             String message = resultObject.get("err").getAsString() + "\n";
@@ -644,6 +762,49 @@ public class MainApp extends javax.swing.JDialog {
                 + "******************************************************";
         addToConsole(message, State.SUC);
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        JsonArray result = core.getBlocksRealtyByIdFromMainFile();
+
+        if (result == null) {
+            addToConsole("V súbore niesu žiadne bloky", State.NON);
+        } else {
+            for (JsonElement jsonElement : result) {
+                JsonObject block = (JsonObject) jsonElement;
+
+                String message = "******************************************************\n"
+                        + " stav bloku: " + (block.get("isValid").getAsBoolean() ? "platný" : "neplatný") + "\n"
+                        + " adresa: " + block.get("address").getAsString() + "\n"
+                        + " adresa nasledujúceho zreťazeného bloku: " + block.get("addressNextBlock").getAsString() + "\n"
+                        + " faktor: " + block.get("factor").getAsString() + "\n"
+                        + " počet platných záznamov: " + block.get("validCount").getAsString() + "\n"
+                        + "******************************************************";
+                addToConsole(message, State.SUC);
+                String rowsHtml = "";
+                for (JsonElement jsonElementRecord : block.get("records").getAsJsonArray()) {
+                    JsonObject record = (JsonObject) jsonElementRecord;
+
+                    ArrayList<String> dataArr = new ArrayList<>();
+                    dataArr.add(record.get("isValid").getAsBoolean() ? "platný" : "neplatný");
+                    dataArr.add(record.get("id").getAsString());
+                    dataArr.add(record.get("address").getAsString());
+
+                    rowsHtml += "\n";
+                    rowsHtml += managerHTML.createTableRow(dataArr);
+                }
+
+                String[] headerArr = {"Stav záznamu", "Identifikačné číslo", "adresa"};
+                String headerHtml = managerHTML.createTableHeader(headerArr);
+                String tableHtml = managerHTML.createTable(headerHtml, rowsHtml);
+                addHtmlComponent(tableHtml);
+                addHtmlComponent("<br>");
+            }
+        }
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton10ActionPerformed
 
     public static String tryParseToInteger(String term) {
         try {
@@ -696,12 +857,6 @@ public class MainApp extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 MainApp dialog = new MainApp(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
                 dialog.setVisible(true);
             }
         });
@@ -718,13 +873,34 @@ public class MainApp extends javax.swing.JDialog {
         jTextPaneConsole.setText("<html><head><style>" + Styles.CSS + "</style></head>");
     }
 
+    private void addHtmlComponent(String component) {
+        HTMLEditorKit kit = (HTMLEditorKit) jTextPaneConsole.getEditorKit();
+        HTMLDocument doc = (HTMLDocument) jTextPaneConsole.getDocument();
+        try {
+            kit.insertHTML(doc, doc.getLength(), component, 0, 0, null);
+
+        } catch (BadLocationException ex) {
+            Logger.getLogger(MainApp.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException ex) {
+            Logger.getLogger(MainApp.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -734,6 +910,8 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -741,6 +919,7 @@ public class MainApp extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -773,7 +952,7 @@ public class MainApp extends javax.swing.JDialog {
                 addColoredTextRow(value, Color.BLACK);
                 break;
         }
-        addColoredTextRow("====================================================================================================", Color.BLACK);
+        addColoredTextRow("=============================================================================================", Color.BLACK);
 
     }
 

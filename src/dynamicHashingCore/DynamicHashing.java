@@ -284,17 +284,36 @@ public class DynamicHashing<T> {
         return true;
     }
 
-    public ArrayList<Block> readAllBlocksFromFile(String fileName) {
+    public ArrayList<Block> readAllBlocksFromMainFile() {
         ArrayList<Block> blockArr = new ArrayList<>();
-        int address = 0;
-        while (true) {
-            Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(address * TEMPLATE_MAIN_BLOCK.getSize(), mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
-            if (block.getFactor() == 0) {
-                break;
-            }
-            System.out.println(block.toString());
+        int offset = 0;
+        int fileLength= 0;
+        try {
+            fileLength = (int) mainFile.length();
+        } catch (IOException ex) {
+            Logger.getLogger(DynamicHashing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        while (fileLength != offset) {
+            Block block = TEMPLATE_MAIN_BLOCK.fromByteArray(readFromFile(offset, mainFile, TEMPLATE_MAIN_BLOCK.getSize()));
             blockArr.add(block);
-            address++;
+            offset += TEMPLATE_MAIN_BLOCK.getSize();
+        }
+        return blockArr;
+    }
+    
+    public ArrayList<Block> readAllBlocksFromAdditionFile() {
+        ArrayList<Block> blockArr = new ArrayList<>();
+        int offset = 0;
+        int fileLength= 0;
+        try {
+            fileLength = (int) additionFile.length();
+        } catch (IOException ex) {
+            Logger.getLogger(DynamicHashing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        while (fileLength != offset) {
+            Block block = TEMPLATE_ADDOTION_BLOCK.fromByteArray(readFromFile(offset, additionFile, TEMPLATE_ADDOTION_BLOCK.getSize()));
+            blockArr.add(block);
+            offset += TEMPLATE_ADDOTION_BLOCK.getSize();
         }
         return blockArr;
     }
@@ -305,6 +324,10 @@ public class DynamicHashing<T> {
             result += address + ", ";
         }
         return result;
+    }
+    
+    public boolean isBlocAddressFree(int address){
+        return freeAddresses.contains(address);
     }
 
     public ArrayList<Integer> getFreeAddresses() {

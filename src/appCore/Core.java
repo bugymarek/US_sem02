@@ -7,6 +7,7 @@ package appCore;
 
 import dynamicHashingCore.DynamicHashing;
 import appCore.Record;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dynamicHashingCore.IRecord;
 import entities.RealtyData;
@@ -15,6 +16,7 @@ import entities.RealtyInCadaster;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -296,6 +298,38 @@ public class Core {
         jobj.addProperty("desc", realtyData.getDesc());
         
         return jobj;
+    }
+
+    public JsonArray getBlocksRealtyByIdFromMainFile() {
+        ArrayList<dynamicHashingCore.Block> arr = dynamicHashingRealty.readAllBlocksFromMainFile();
+        if (arr.isEmpty()) {
+            return null;
+        }
+
+        JsonArray jsonArray = new JsonArray();
+        for (dynamicHashingCore.Block block : arr) {
+            JsonObject jobjBlock = new JsonObject();
+            jobjBlock.addProperty("isValid", !dynamicHashingRealty.isBlocAddressFree(block.getAddress()));
+            jobjBlock.addProperty("address", block.getAddress());
+            jobjBlock.addProperty("addressNextBlock", block.getAddressNextBlock());
+            jobjBlock.addProperty("factor", block.getFactor());
+            jobjBlock.addProperty("validCount", block.getValidRecordsCount());
+            
+            JsonArray jsonArrayRecords = new JsonArray();
+            for(dynamicHashingCore.Record record : block.getRecordsList()){
+                JsonObject jobjRecord = new JsonObject();
+                jobjRecord.addProperty("isValid", record.isIsValid());
+                jobjRecord.addProperty("id", ((RealtyID)record.getData()).getId());
+                jobjRecord.addProperty("address", ((RealtyID)record.getData()).getId());
+                
+                jsonArrayRecords.add(jobjRecord);
+            }
+            jobjBlock.add("records", jsonArrayRecords);
+            
+            jsonArray.add(jobjBlock);
+        }
+        
+        return jsonArray;
     }
 
 }
