@@ -208,6 +208,14 @@ public class Core {
         return null;
     }
 
+    private RealtyData findRealtyInBlock(Block block, IRecord record) {
+        Record findedRecord = block.findRecord(new Record(true, record));
+        if (findedRecord != null) {
+            return (RealtyData) findedRecord.getData();
+        }
+        return null;
+    }
+
     public int generateRealties(int count) {
         Random randomGenerator = new Random(generatorSeeds.nextInt());
 
@@ -459,11 +467,11 @@ public class Core {
 
         return jsonArray;
     }
-    
+
     public ArrayList<Block> readAllBlocksFromUnsortedFile() {
         ArrayList<Block> blockArr = new ArrayList<>();
         int offset = 0;
-        int fileLength= 0;
+        int fileLength = 0;
         try {
             fileLength = (int) unsrotedFile.length();
         } catch (IOException ex) {
@@ -475,6 +483,39 @@ public class Core {
             offset += TEMPLATE_BLOCK.getSize();
         }
         return blockArr;
+    }
+
+    public JsonObject editRealty(int id, String desc) {
+        JsonObject jobj = new JsonObject();
+        RealtyID realtyID = (RealtyID) dynamicHashingRealty.find(new RealtyID(id));
+        if (realtyID == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla.");
+            return jobj;
+        }
+
+        Block block = TEMPLATE_BLOCK.fromByteArray(readFromFile(realtyID.getAddress() * TEMPLATE_BLOCK.getSize()));
+
+        RealtyData realtyData = findRealtyInBlock(block, new RealtyData(id));
+        if (realtyData == null) {
+            jobj.addProperty("err", "Nehnuteľnosť sa nenašla v neusporiadanom súbore.");
+            return jobj;
+        }
+
+        realtyData.setDesc(desc);
+        
+        jobj.addProperty("id", realtyData.getId());
+        jobj.addProperty("idRealty", realtyData.getIdInCadaster());
+        jobj.addProperty("cadasterName", realtyData.getCadasterName());
+        jobj.addProperty("desc", realtyData.getDesc());
+
+        boolean resultFile = writeToFile(realtyID.getAddress() * TEMPLATE_BLOCK.getSize(), block.toByteArray());
+        if (!resultFile) {
+            jobj = new JsonObject();
+            jobj.addProperty("err", "Nepodarilo sa editovať nehnuteľnosť.");
+            return jobj;
+        }
+
+        return jobj;
     }
 
 }
