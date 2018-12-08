@@ -9,6 +9,8 @@ import appCore.Core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import static constants.CommonConstants.REALTY_CADASTER_NAME_MAX_LENGTH;
+import static constants.CommonConstants.REALTY_DESC_MAX_LENGTH;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
@@ -700,6 +702,22 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
+        if (nameCadaster.length() > REALTY_CADASTER_NAME_MAX_LENGTH ) {
+            JOptionPane.showMessageDialog(this,
+                    "Prekročili ste povolenú dížku názovu katastrálneho územia. Povolená dlžka je " + REALTY_CADASTER_NAME_MAX_LENGTH + " znakov.",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (desc.length() > REALTY_DESC_MAX_LENGTH ) {
+            JOptionPane.showMessageDialog(this,
+                    "Prekročili ste povolenú dížku popisu. Povolená dlžka je " + REALTY_DESC_MAX_LENGTH + " znakov.",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         String result = tryParseToInteger(idRealtyInCadaster);
         String result1 = tryParseToInteger(id);
@@ -826,6 +844,14 @@ public class MainApp extends javax.swing.JDialog {
                 || isEmptyTextField(cadasterName)) {
             JOptionPane.showMessageDialog(this,
                     "Vyplnte všetky polička označene hviezdičkou.(*)",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (cadasterName.length() > REALTY_CADASTER_NAME_MAX_LENGTH ) {
+            JOptionPane.showMessageDialog(this,
+                    "Prekročili ste povolenú dížku názovu katastrálneho územia. Povolená dlžka je " + REALTY_CADASTER_NAME_MAX_LENGTH + " znakov.",
                     "Pozor",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -1062,6 +1088,14 @@ public class MainApp extends javax.swing.JDialog {
                 || isEmptyTextField(desc)) {
             JOptionPane.showMessageDialog(this,
                     "Vyplnte všetky polička označene hviezdičkou.(*)",
+                    "Pozor",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (desc.length() > REALTY_DESC_MAX_LENGTH ) {
+            JOptionPane.showMessageDialog(this,
+                    "Prekročili ste povolenú dížku popisu. Povolená dlžka je " + REALTY_DESC_MAX_LENGTH + " znakov.",
                     "Pozor",
                     JOptionPane.WARNING_MESSAGE);
             return;
