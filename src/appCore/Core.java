@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class Core {
 
     private final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
-    private final String UNSORTED_FILE_TYPE = ".hash";
+    private final String UNSORTED_FILE_TYPE = ".bin";
     private final String NAME_FILE = "Neutriedeny";
     private final int FACTOR = 2;
     private final RealtyData TEMPLATE_REALTY_DATA = new RealtyData();
@@ -170,7 +170,7 @@ public class Core {
             if (resultMemory && resultFile) {
                 return 0;
             } else {
-                System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
+                //System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
                 return -1;
             }
         } else { // ake nieje subor prazdy
@@ -182,7 +182,7 @@ public class Core {
                 if (resultMemory && resultFile) {
                     return block.getAddress();
                 } else {
-                    System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
+                    //System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
                     return -1;
                 }
             } else { // v poslednom blku uz nieje miesto na zapis... vytvor dalsi blok a vloz tam zaznam
@@ -192,7 +192,7 @@ public class Core {
                 if (resultMemory && resultFile) {
                     return block.getAddress();
                 } else {
-                    System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
+                    //System.out.println("\n nepodarilo sa vlozit záznam: " + newRecord.toString());
                     return -1;
                 }
             }

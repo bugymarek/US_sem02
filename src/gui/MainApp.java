@@ -43,6 +43,15 @@ public class MainApp extends javax.swing.JDialog {
         configTextPane();
         managerHTML = new ManagerHTML();
 
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (core != null) {
+                    core.saveToConfigFiles();
+                }
+                System.exit(0);
+            }
+        });
         int result = JOptionPane.showConfirmDialog(this,
                 "Chcete načítať exitstujúcu databázú dát",
                 "Uložisko dát",
@@ -110,14 +119,6 @@ public class MainApp extends javax.swing.JDialog {
             }
 
         }
-
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                core.saveToConfigFiles();
-                System.exit(0);
-            }
-        });
     }
 
     /**
@@ -702,16 +703,16 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        if (nameCadaster.length() > REALTY_CADASTER_NAME_MAX_LENGTH ) {
+
+        if (nameCadaster.length() > REALTY_CADASTER_NAME_MAX_LENGTH) {
             JOptionPane.showMessageDialog(this,
                     "Prekročili ste povolenú dížku názovu katastrálneho územia. Povolená dlžka je " + REALTY_CADASTER_NAME_MAX_LENGTH + " znakov.",
                     "Pozor",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        if (desc.length() > REALTY_DESC_MAX_LENGTH ) {
+
+        if (desc.length() > REALTY_DESC_MAX_LENGTH) {
             JOptionPane.showMessageDialog(this,
                     "Prekročili ste povolenú dížku popisu. Povolená dlžka je " + REALTY_DESC_MAX_LENGTH + " znakov.",
                     "Pozor",
@@ -848,8 +849,8 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        if (cadasterName.length() > REALTY_CADASTER_NAME_MAX_LENGTH ) {
+
+        if (cadasterName.length() > REALTY_CADASTER_NAME_MAX_LENGTH) {
             JOptionPane.showMessageDialog(this,
                     "Prekročili ste povolenú dížku názovu katastrálneho územia. Povolená dlžka je " + REALTY_CADASTER_NAME_MAX_LENGTH + " znakov.",
                     "Pozor",
@@ -1092,8 +1093,8 @@ public class MainApp extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        if (desc.length() > REALTY_DESC_MAX_LENGTH ) {
+
+        if (desc.length() > REALTY_DESC_MAX_LENGTH) {
             JOptionPane.showMessageDialog(this,
                     "Prekročili ste povolenú dížku popisu. Povolená dlžka je " + REALTY_DESC_MAX_LENGTH + " znakov.",
                     "Pozor",

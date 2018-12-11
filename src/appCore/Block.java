@@ -22,7 +22,6 @@ public class Block {
     private List<Record> recordsList;
     private int factor;
     private static final int SIZE_IN_BYTE_ADDRESS_IN_BLOCK = 4;
-    private static final int SIZE_IN_BYTE_FACTOR_IN_BLOCK = 4;
 
     public Block(int address, int factor, IRecord record) {
         this.address = address;
@@ -40,7 +39,7 @@ public class Block {
         Converter.ConverterToByteArray converterToByteArray = new Converter.ConverterToByteArray();
 
         converterToByteArray.writeInt(this.address);
-        converterToByteArray.writeInt(this.factor);
+
         for (Record record : recordsList) {
             converterToByteArray.writeByteArray(record.toByteArray());
         }
@@ -52,7 +51,6 @@ public class Block {
         Converter.ConverterFromByteArray converterFromByteArray = new Converter.ConverterFromByteArray(byteArray);
         
         int address = converterFromByteArray.readInt();
-        int factor = converterFromByteArray.readInt();
 
         Record record =  recordsList.get(0).copy();
         List<Record> recordsList = new ArrayList<>();
@@ -168,7 +166,7 @@ public class Block {
     }
     
     public int getSize(){
-      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK;
+      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK;
     }
 
     public int getFactor() {

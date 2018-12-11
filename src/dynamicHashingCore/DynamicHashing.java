@@ -42,7 +42,7 @@ public class DynamicHashing<T> {
     private final Record<T> TEMPLATE_RECORD;
     private String FILE_NAME;
     public static final String PATH = "C:/Users/Bugy/Documents/NetBeansProjects/US_sem02/src/storage/";
-    private static final String FILE_TYPE = ".hash";
+    private static final String FILE_TYPE = ".bin";
     public static final String FILE_CONFIG_TYPE = ".txt";
 
     public DynamicHashing(String fileNeme, int mainFactor, int additionFactor, IRecord<T> templateRecord, int maxHashSize) {
@@ -191,7 +191,7 @@ public class DynamicHashing<T> {
                 ((InternalNode) newInternalNode).setLeftNode(sonLeft);
                 ((InternalNode) newInternalNode).setRightNode(sonRight);
 
-                if (currentNode.getFather() == null) {// tu bude pravdepodobne chyba
+                if (currentNode.getFather() == null) {
                     root = newInternalNode;
                 } else if (((InternalNode) currentNode.getFather()).getLeftNode() instanceof InternalNode) { // ak je lavy interny potom nastav praveho potomka
                     ((InternalNode) currentNode.getFather()).setRightNode(newInternalNode);
@@ -261,8 +261,8 @@ public class DynamicHashing<T> {
             }
         }
         // tu budem riešiť koliziu. Daj pozor aby sa vykonal tento kod len pri kolizii. To znamena že pri uspešnom/ neuspešnom vloženi treba mať return z metody.
-        System.out.println("Kolizia. Id zaznamu: " + record.getHashKey());
-        System.out.println("\n");
+        //System.out.println("Kolizia. Id zaznamu: " + record.getHashKey());
+        //System.out.println("\n");
         return addToAdditionFile(currentNode, record);
     }
 
