@@ -22,7 +22,6 @@ public class Block {
     private int factor;
     private static final int SIZE_IN_BYTE_ADDRESS_IN_BLOCK = 4;
     private static final int SIZE_IN_BYTE_ADDRESS_NEXT_BLOCK = 4;
-    private static final int SIZE_IN_BYTE_FACTOR_IN_BLOCK = 4;
 
     public Block(int address, int factor, IRecord record) {
         this.address = address;
@@ -43,7 +42,7 @@ public class Block {
 
         converterToByteArray.writeInt(this.address);
         converterToByteArray.writeInt(this.addressNextBlock);
-        converterToByteArray.writeInt(this.factor);
+        
         for (Record record : recordsList) {
             converterToByteArray.writeByteArray(record.toByteArray());
         }
@@ -56,7 +55,6 @@ public class Block {
         
         int address = converterFromByteArray.readInt();
         int addressNextBlock = converterFromByteArray.readInt();
-        int factor = converterFromByteArray.readInt();
 
         Record record =  recordsList.get(0).copy();
         List<Record> recordsList = new ArrayList<>();
@@ -172,7 +170,7 @@ public class Block {
     }
     
     public int getSize(){
-      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_FACTOR_IN_BLOCK + SIZE_IN_BYTE_ADDRESS_NEXT_BLOCK;
+      return (this.recordsList.get(0).getSize() * this.factor) + SIZE_IN_BYTE_ADDRESS_IN_BLOCK + SIZE_IN_BYTE_ADDRESS_NEXT_BLOCK;
     }
 
     public int getFactor() {
